@@ -1,0 +1,144 @@
+import uuid
+from datetime import datetime
+from typing import List, Optional
+from motor.motor_asyncio import AsyncIOMotorDatabase
+from bson import ObjectId
+from pymongo.errors import DuplicateKeyError
+
+from models.citizen import CitizenModel, CitizenCreate, CitizenUpdate, CitizenResponse
+
+
+class CitizenService:
+    def __init__(self, database: AsyncIOMotorDatabase):
+        self.database = database
+        self.collection = database["citizens"]
+        
+    async def create_indexes(self):
+        """Create database indexes for the citizen collection"""
+        await self.collection.create_index("nic", unique=True)
+        await self.collection.create_index("email", unique=True)
+        await self.collection.create_index("citizen_id", unique=True)
+        
+    async def generate_citizen_id(self) -> str:
+        """Generate a unique citizen ID"""
+        while True:
+            citizen_id = f"CIT{uuid.uuid4().hex[:8].upper()}"
+            existing = await self.collection.find_one({"citizen_id": citizen_id})
+            if not existing:
+                return citizen_id
+
+    async def create_citizen(self, citizen_data: CitizenCreate) -> CitizenResponse:
+        """Create a new citizen"""
+        try:
+            # Generate unique citizen ID
+            citizen_id = await self.generate_citizen_id()
+            
+            # Create citizen document
+            citizen_dict = citizen_data.dict()
+            citizen_dict["citizen_id"] = citizen_id
+            citizen_dict["created_at"] = datetime.utcnow()
+            citizen_dict["updated_at"] = datetime.utcnow()
+            citizen_dict["is_active"] = True
+            
+            # Insert into database
+            result = await self.collection.insert_one(citizen_dict)
+            
+            # Retrieve and return the created citizen
+            created_citizen = await self.collection.find_one({"_id": result.inserted_id})
+            return CitizenResponse.from_mongo(created_citizen)
+            
+        except DuplicateKeyError as e:
+            if "nic" in str(e):
+                raise ValueError("NIC already exists in the system")
+            elif "email" in str(e):
+                raise ValueError("Email already exists in the system")
+            else:
+                raise ValueError("Duplicate entry found")
+
+    async def get_citizen_by_id(self, citizen_id: str) -> Optional[CitizenResponse]:
+        """Get citizen by citizen ID"""
+        citizen = await self.collection.find_one({"citizen_id": citizen_id})
+        if citizen:
+            return CitizenResponse.from_mongo(citizen)
+        return None
+
+    async def get_citizen_by_nic(self, nic: str) -> Optional[CitizenResponse]:
+        """Get citizen by NIC"""
+        citizen = await self.collection.find_one({"nic": nic.upper()})
+        if citizen:
+            return CitizenResponse.from_mongo(citizen)
+        return None
+
+    async def get_citizen_by_email(self, email: str) -> Optional[CitizenResponse]:
+        """Get citizen by email"""
+        citizen = await self.collection.find_one({"email": email.lower()})
+        if citizen:
+            return CitizenResponse.from_mongo(citizen)
+        return None
+
+    async def get_all_citizens(self, skip: int = 0, limit: int = 100, active_only: bool = True) -> List[CitizenResponse]:
+        """Get all citizens with pagination"""
+        query = {"is_active": True} if active_only else {}
+        cursor = self.collection.find(query).skip(skip).limit(limit)
+        citizens = []
+        async for citizen in cursor:
+            citizens.append(CitizenResponse.from_mongo(citizen))
+        return citizens
+
+    async def update_citizen(self, citizen_id: str, update_data: CitizenUpdate) -> Optional[CitizenResponse]:
+        """Update citizen information"""
+        update_dict = {k: v for k, v in update_data.dict().items() if v is not None}
+        
+        if not update_dict:
+            # No fields to update
+            return await self.get_citizen_by_id(citizen_id)
+        
+        update_dict["updated_at"] = datetime.utcnow()
+        
+        result = await self.collection.update_one(
+            {"citizen_id": citizen_id},
+            {"$set": update_dict}
+        )
+        
+        if result.matched_count:
+            return await self.get_citizen_by_id(citizen_id)
+        return None
+
+    async def delete_citizen(self, citizen_id: str) -> bool:
+        """Soft delete a citizen (mark as inactive)"""
+        result = await self.collection.update_one(
+            {"citizen_id": citizen_id},
+            {"$set": {"is_active": False, "updated_at": datetime.utcnow()}}
+        )
+        return result.matched_count > 0
+
+    async def hard_delete_citizen(self, citizen_id: str) -> bool:
+        """Permanently delete a citizen"""
+        result = await self.collection.delete_one({"citizen_id": citizen_id})
+        return result.deleted_count > 0
+
+    async def search_citizens(self, search_term: str, skip: int = 0, limit: int = 100) -> List[CitizenResponse]:
+        """Search citizens by name, NIC, or email"""
+        query = {
+            "$and": [
+                {"is_active": True},
+                {
+                    "$or": [
+                        {"full_name": {"$regex": search_term, "$options": "i"}},
+                        {"nic": {"$regex": search_term, "$options": "i"}},
+                        {"email": {"$regex": search_term, "$options": "i"}}
+                    ]
+                }
+            ]
+        }
+        
+        cursor = self.collection.find(query).skip(skip).limit(limit)
+        citizens = []
+        async for citizen in cursor:
+            citizens.append(CitizenResponse.from_mongo(citizen))
+        return citizens
+
+    async def get_citizen_count(self, active_only: bool = True) -> int:
+        """Get total count of citizens"""
+        query = {"is_active": True} if active_only else {}
+        return await self.collection.count_documents(query)

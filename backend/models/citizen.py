@@ -1,0 +1,140 @@
+from pydantic import BaseModel, Field, EmailStr, field_validator
+from typing import Optional, Annotated
+from datetime import datetime
+from bson import ObjectId
+from enum import Enum
+import uuid
+
+
+class PyObjectId(ObjectId):
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source_type, handler):
+        from pydantic_core import core_schema
+        return core_schema.with_info_plain_validator_function(
+            cls.validate,
+            serialization=core_schema.to_string_ser_schema(),
+        )
+
+    @classmethod
+    def validate(cls, v, info):
+        if isinstance(v, ObjectId):
+            return v
+        if isinstance(v, str):
+            if ObjectId.is_valid(v):
+                return ObjectId(v)
+        raise ValueError("Invalid ObjectId")
+
+    def __str__(self):
+        return str(super())
+
+
+class GenderEnum(str, Enum):
+    MALE = "Male"
+    FEMALE = "Female"
+    OTHER = "Other"
+
+
+class CitizenModel(BaseModel):
+    id: Optional[PyObjectId] = Field(default_factory=PyObjectId, alias="_id")
+    citizen_id: Optional[str] = Field(None, description="Auto-generated citizen ID")
+    nic: str = Field(..., description="National Identity Card number (Unique)", min_length=10, max_length=12)
+    full_name: str = Field(..., description="Full name of the citizen", min_length=2, max_length=100)
+    date_of_birth: datetime = Field(..., description="Date of birth")
+    gender: GenderEnum = Field(..., description="Gender")
+    address: str = Field(..., description="Full address", min_length=10, max_length=500)
+    contact_number: str = Field(..., description="Contact phone number", min_length=10, max_length=15)
+    email: EmailStr = Field(..., description="Email address")
+    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    is_active: bool = Field(default=True, description="Account status")
+
+    @field_validator('nic')
+    @classmethod
+    def validate_nic(cls, v):
+        # Sri Lankan NIC validation (basic)
+        if len(v) == 10:
+            if not (v[:9].isdigit() and v[9].upper() in ['V', 'X']):
+                raise ValueError('Invalid NIC format for old format')
+        elif len(v) == 12:
+            if not v.isdigit():
+                raise ValueError('Invalid NIC format for new format')
+        else:
+            raise ValueError('NIC must be 10 or 12 characters')
+        return v.upper()
+
+    @field_validator('contact_number')
+    @classmethod
+    def validate_contact_number(cls, v):
+        # Remove any spaces or special characters and validate
+        cleaned = ''.join(filter(str.isdigit, v))
+        if len(cleaned) < 10:
+            raise ValueError('Contact number must be at least 10 digits')
+        return v
+
+    @field_validator('date_of_birth')
+    @classmethod
+    def validate_date_of_birth(cls, v):
+        if v > datetime.now():
+            raise ValueError('Date of birth cannot be in the future')
+        return v
+
+    model_config = {
+        "populate_by_name": True,
+        "arbitrary_types_allowed": True,
+        "json_encoders": {ObjectId: str},
+        "json_schema_extra": {
+            "example": {
+                "nic": "200012345678",
+                "full_name": "John Doe Silva",
+                "date_of_birth": "1990-05-15T00:00:00",
+                "gender": "Male",
+                "address": "123 Main Street, Colombo 03, Sri Lanka",
+                "contact_number": "+94771234567",
+                "email": "john.doe@email.com"
+            }
+        }
+    }
+
+
+class CitizenCreate(BaseModel):
+    nic: str = Field(..., description="National Identity Card number (Unique)")
+    full_name: str = Field(..., description="Full name of the citizen")
+    date_of_birth: datetime = Field(..., description="Date of birth")
+    gender: GenderEnum = Field(..., description="Gender")
+    address: str = Field(..., description="Full address")
+    contact_number: str = Field(..., description="Contact phone number")
+    email: EmailStr = Field(..., description="Email address")
+
+
+class CitizenUpdate(BaseModel):
+    full_name: Optional[str] = None
+    date_of_birth: Optional[datetime] = None
+    gender: Optional[GenderEnum] = None
+    address: Optional[str] = None
+    contact_number: Optional[str] = None
+    email: Optional[EmailStr] = None
+    is_active: Optional[bool] = None
+
+
+class CitizenResponse(BaseModel):
+    id: str = Field(..., alias="_id")
+    citizen_id: str
+    nic: str
+    full_name: str
+    date_of_birth: datetime
+    gender: str
+    address: str
+    contact_number: str
+    email: str
+    created_at: datetime
+    updated_at: datetime
+    is_active: bool
+
+    @classmethod
+    def from_mongo(cls, data: dict):
+        """Convert MongoDB document to response model"""
+        if "_id" in data:
+            data["_id"] = str(data["_id"])
+        return cls(**data)
+
+    model_config = {"populate_by_name": True}
