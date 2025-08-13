@@ -45,6 +45,7 @@ class TeacherModel(BaseModel):
     subjects: List[str] = Field(..., description="Subjects taught by teacher (multi-valued)")
     years_in_service_district: int = Field(..., description="Years in service in current district", ge=0, le=50)
     school_id: str = Field(..., description="School ID (string, reference only)")
+    phone: Optional[str] = Field(None, description="Contact phone number")
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
     updated_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
     is_active: bool = Field(default=True, description="Teacher status")
@@ -77,7 +78,8 @@ class TeacherModel(BaseModel):
                 "current_district": "Kandy",
                 "subjects": ["Mathematics", "Science"],
                 "years_in_service_district": 5,
-                "school_id": "SCH98765432"
+                "school_id": "SCH98765432",
+                "phone": "+94 77 123 4567"
             }
         }
     }
@@ -89,6 +91,7 @@ class TeacherCreate(BaseModel):
     subjects: List[str] = Field(..., description="Subjects taught by teacher")
     years_in_service_district: int = Field(..., description="Years in service in current district", ge=0, le=50)
     school_id: str = Field(..., description="School ID")
+    phone: Optional[str] = Field(None, description="Contact phone number")
 
 
 class TeacherUpdate(BaseModel):
@@ -97,6 +100,7 @@ class TeacherUpdate(BaseModel):
     subjects: Optional[List[str]] = None
     years_in_service_district: Optional[int] = None
     school_id: Optional[str] = None
+    phone: Optional[str] = None
     is_active: Optional[bool] = None
 
 
@@ -108,6 +112,7 @@ class TeacherResponse(BaseModel):
     subjects: List[str]
     years_in_service_district: int
     school_id: str
+    phone: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     is_active: bool

@@ -85,6 +85,24 @@ class CitizenService:
             citizens.append(CitizenResponse.from_mongo(citizen))
         return citizens
 
+    async def link_teacher_to_citizen(self, *, citizen_id: Optional[str] = None, nic: Optional[str] = None, teacher_id: str = "") -> Optional[CitizenResponse]:
+        """Link a citizen to a teacher_id using citizen_id or NIC."""
+        if not teacher_id:
+            return None
+        query = {"citizen_id": citizen_id} if citizen_id else ({"nic": nic.upper()} if nic else None)
+        if not query:
+            return None
+        result = await self.collection.find_one_and_update(
+            query,
+            {"$set": {"teacher_id": teacher_id, "citizen_type": "Teacher", "updated_at": datetime.utcnow()}},
+            return_document=True,
+        )
+        return CitizenResponse.from_mongo(result) if result else None
+
+    async def get_citizen_by_teacher_id(self, teacher_id: str) -> Optional[CitizenResponse]:
+        doc = await self.collection.find_one({"teacher_id": teacher_id})
+        return CitizenResponse.from_mongo(doc) if doc else None
+
     async def update_citizen(self, citizen_id: str, update_data: CitizenUpdate) -> Optional[CitizenResponse]:
         """Update citizen information"""
         update_dict = {k: v for k, v in update_data.dict().items() if v is not None}

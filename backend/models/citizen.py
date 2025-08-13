@@ -80,6 +80,7 @@ class CitizenModel(BaseModel):
     
     # Citizen type and teacher-specific fields
     citizen_type: CitizenTypeEnum = Field(default=CitizenTypeEnum.CITIZEN, description="Type of citizen")
+    teacher_id: Optional[str] = Field(None, description="Linked Teacher ID if citizen is a teacher")
     
     # Teacher-specific fields (only required if citizen_type is TEACHER)
     subjects: Optional[List[str]] = Field(None, description="Subjects taught by teacher (multi-valued)")
@@ -201,6 +202,7 @@ class CitizenCreate(BaseModel):
     subjects: Optional[List[str]] = Field(None, description="Subjects taught by teacher")
     current_district: Optional[DistrictEnum] = Field(None, description="Current district of service")
     years_in_service: Optional[int] = Field(None, description="Years in teaching service")
+    teacher_id: Optional[str] = Field(None, description="Linked Teacher ID if applicable")
 
 
 class CitizenUpdate(BaseModel):
@@ -214,6 +216,7 @@ class CitizenUpdate(BaseModel):
     subjects: Optional[List[str]] = None
     current_district: Optional[DistrictEnum] = None
     years_in_service: Optional[int] = None
+    teacher_id: Optional[str] = None
     is_active: Optional[bool] = None
 
 
@@ -231,6 +234,7 @@ class CitizenResponse(BaseModel):
     subjects: Optional[List[str]] = None
     current_district: Optional[str] = None
     years_in_service: Optional[int] = None
+    teacher_id: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     is_active: bool
