@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, EmailStr, field_validator
-from typing import Optional, Annotated
+from typing import Optional, Annotated, List
 from datetime import datetime
 from bson import ObjectId
 from enum import Enum
@@ -34,6 +34,39 @@ class GenderEnum(str, Enum):
     OTHER = "Other"
 
 
+class CitizenTypeEnum(str, Enum):
+    CITIZEN = "Citizen"
+    TEACHER = "Teacher"
+
+
+class DistrictEnum(str, Enum):
+    COLOMBO = "Colombo"
+    GAMPAHA = "Gampaha"
+    KALUTARA = "Kalutara"
+    KANDY = "Kandy"
+    MATALE = "Matale"
+    NUWARA_ELIYA = "Nuwara Eliya"
+    GALLE = "Galle"
+    MATARA = "Matara"
+    HAMBANTOTA = "Hambantota"
+    JAFFNA = "Jaffna"
+    KILINOCHCHI = "Kilinochchi"
+    MANNAR = "Mannar"
+    VAVUNIYA = "Vavuniya"
+    MULLAITIVU = "Mullaitivu"
+    BATTICALOA = "Batticaloa"
+    AMPARA = "Ampara"
+    TRINCOMALEE = "Trincomalee"
+    KURUNEGALA = "Kurunegala"
+    PUTTALAM = "Puttalam"
+    ANURADHAPURA = "Anuradhapura"
+    POLONNARUWA = "Polonnaruwa"
+    BADULLA = "Badulla"
+    MONARAGALA = "Monaragala"
+    RATNAPURA = "Ratnapura"
+    KEGALLE = "Kegalle"
+
+
 class CitizenModel(BaseModel):
     id: Optional[PyObjectId] = Field(default_factory=PyObjectId, alias="_id")
     citizen_id: Optional[str] = Field(None, description="Auto-generated citizen ID")
@@ -44,6 +77,16 @@ class CitizenModel(BaseModel):
     address: str = Field(..., description="Full address", min_length=10, max_length=500)
     contact_number: str = Field(..., description="Contact phone number", min_length=10, max_length=15)
     email: EmailStr = Field(..., description="Email address")
+    
+    # Citizen type and teacher-specific fields
+    citizen_type: CitizenTypeEnum = Field(default=CitizenTypeEnum.CITIZEN, description="Type of citizen")
+    
+    # Teacher-specific fields (only required if citizen_type is TEACHER)
+    subjects: Optional[List[str]] = Field(None, description="Subjects taught by teacher (multi-valued)")
+    current_district: Optional[DistrictEnum] = Field(None, description="Current district of service for teacher")
+    years_in_service: Optional[int] = Field(None, description="Years in teaching service", ge=0, le=50)
+    
+    # Common fields
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
     updated_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
     is_active: bool = Field(default=True, description="Account status")
@@ -78,20 +121,68 @@ class CitizenModel(BaseModel):
             raise ValueError('Date of birth cannot be in the future')
         return v
 
+    @field_validator('subjects')
+    @classmethod
+    def validate_subjects(cls, v, info):
+        citizen_type = info.data.get('citizen_type')
+        if citizen_type == CitizenTypeEnum.TEACHER:
+            if not v or len(v) == 0:
+                raise ValueError('Teachers must have at least one subject')
+            # Remove duplicates and validate
+            unique_subjects = list(set([subject.strip().title() for subject in v if subject.strip()]))
+            if len(unique_subjects) == 0:
+                raise ValueError('Teachers must have at least one valid subject')
+            return unique_subjects
+        return v
+
+    @field_validator('current_district')
+    @classmethod
+    def validate_current_district(cls, v, info):
+        citizen_type = info.data.get('citizen_type')
+        if citizen_type == CitizenTypeEnum.TEACHER and v is None:
+            raise ValueError('Teachers must have a current district specified')
+        return v
+
+    @field_validator('years_in_service')
+    @classmethod
+    def validate_years_in_service(cls, v, info):
+        citizen_type = info.data.get('citizen_type')
+        if citizen_type == CitizenTypeEnum.TEACHER and v is None:
+            raise ValueError('Teachers must have years in service specified')
+        if v is not None and v < 0:
+            raise ValueError('Years in service cannot be negative')
+        return v
+
     model_config = {
         "populate_by_name": True,
         "arbitrary_types_allowed": True,
         "json_encoders": {ObjectId: str},
         "json_schema_extra": {
-            "example": {
-                "nic": "200012345678",
-                "full_name": "John Doe Silva",
-                "date_of_birth": "1990-05-15T00:00:00",
-                "gender": "Male",
-                "address": "123 Main Street, Colombo 03, Sri Lanka",
-                "contact_number": "+94771234567",
-                "email": "john.doe@email.com"
-            }
+            "examples": [
+                {
+                    "nic": "200012345678",
+                    "full_name": "John Doe Silva",
+                    "date_of_birth": "1990-05-15T00:00:00",
+                    "gender": "Male",
+                    "address": "123 Main Street, Colombo 03, Sri Lanka",
+                    "contact_number": "+94771234567",
+                    "email": "john.doe@email.com",
+                    "citizen_type": "Citizen"
+                },
+                {
+                    "nic": "198567890123",
+                    "full_name": "Jane Smith Teacher",
+                    "date_of_birth": "1985-08-20T00:00:00",
+                    "gender": "Female",
+                    "address": "456 School Road, Kandy, Sri Lanka",
+                    "contact_number": "+94771234568",
+                    "email": "jane.teacher@email.com",
+                    "citizen_type": "Teacher",
+                    "subjects": ["Mathematics", "Physics", "Chemistry"],
+                    "current_district": "Kandy",
+                    "years_in_service": 10
+                }
+            ]
         }
     }
 
@@ -104,6 +195,12 @@ class CitizenCreate(BaseModel):
     address: str = Field(..., description="Full address")
     contact_number: str = Field(..., description="Contact phone number")
     email: EmailStr = Field(..., description="Email address")
+    
+    # Optional teacher-specific fields
+    citizen_type: CitizenTypeEnum = Field(default=CitizenTypeEnum.CITIZEN, description="Type of citizen")
+    subjects: Optional[List[str]] = Field(None, description="Subjects taught by teacher")
+    current_district: Optional[DistrictEnum] = Field(None, description="Current district of service")
+    years_in_service: Optional[int] = Field(None, description="Years in teaching service")
 
 
 class CitizenUpdate(BaseModel):
@@ -113,6 +210,10 @@ class CitizenUpdate(BaseModel):
     address: Optional[str] = None
     contact_number: Optional[str] = None
     email: Optional[EmailStr] = None
+    citizen_type: Optional[CitizenTypeEnum] = None
+    subjects: Optional[List[str]] = None
+    current_district: Optional[DistrictEnum] = None
+    years_in_service: Optional[int] = None
     is_active: Optional[bool] = None
 
 
@@ -126,6 +227,10 @@ class CitizenResponse(BaseModel):
     address: str
     contact_number: str
     email: str
+    citizen_type: str
+    subjects: Optional[List[str]] = None
+    current_district: Optional[str] = None
+    years_in_service: Optional[int] = None
     created_at: datetime
     updated_at: datetime
     is_active: bool

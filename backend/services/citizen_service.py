@@ -142,3 +142,91 @@ class CitizenService:
         """Get total count of citizens"""
         query = {"is_active": True} if active_only else {}
         return await self.collection.count_documents(query)
+
+    async def get_teachers_by_subject(self, subject: str, skip: int = 0, limit: int = 100) -> List[CitizenResponse]:
+        """Get teachers by subject"""
+        query = {
+            "citizen_type": "Teacher",
+            "is_active": True,
+            "subjects": {"$regex": subject, "$options": "i"}
+        }
+        cursor = self.collection.find(query).skip(skip).limit(limit)
+        teachers = []
+        async for teacher in cursor:
+            teachers.append(CitizenResponse.from_mongo(teacher))
+        return teachers
+
+    async def get_teachers_by_district(self, district: str, skip: int = 0, limit: int = 100) -> List[CitizenResponse]:
+        """Get teachers by district"""
+        query = {
+            "citizen_type": "Teacher",
+            "is_active": True,
+            "current_district": district
+        }
+        cursor = self.collection.find(query).skip(skip).limit(limit)
+        teachers = []
+        async for teacher in cursor:
+            teachers.append(CitizenResponse.from_mongo(teacher))
+        return teachers
+
+    async def get_teachers_by_experience(self, min_years: int, max_years: int = None, skip: int = 0, limit: int = 100) -> List[CitizenResponse]:
+        """Get teachers by years of experience"""
+        query = {
+            "citizen_type": "Teacher",
+            "is_active": True,
+            "years_in_service": {"$gte": min_years}
+        }
+        if max_years:
+            query["years_in_service"]["$lte"] = max_years
+        
+        cursor = self.collection.find(query).skip(skip).limit(limit)
+        teachers = []
+        async for teacher in cursor:
+            teachers.append(CitizenResponse.from_mongo(teacher))
+        return teachers
+
+    async def get_all_teachers(self, skip: int = 0, limit: int = 100) -> List[CitizenResponse]:
+        """Get all teachers"""
+        query = {
+            "citizen_type": "Teacher",
+            "is_active": True
+        }
+        cursor = self.collection.find(query).skip(skip).limit(limit)
+        teachers = []
+        async for teacher in cursor:
+            teachers.append(CitizenResponse.from_mongo(teacher))
+        return teachers
+
+    async def get_teacher_statistics(self):
+        """Get teacher statistics"""
+        pipeline = [
+            {"$match": {"citizen_type": "Teacher", "is_active": True}},
+            {"$group": {
+                "_id": None,
+                "total_teachers": {"$sum": 1},
+                "avg_experience": {"$avg": "$years_in_service"},
+                "districts": {"$addToSet": "$current_district"},
+                "all_subjects": {"$push": "$subjects"}
+            }},
+            {"$project": {
+                "_id": 0,
+                "total_teachers": 1,
+                "avg_experience": {"$round": ["$avg_experience", 1]},
+                "total_districts": {"$size": "$districts"},
+                "districts": 1,
+                "unique_subjects": {
+                    "$size": {
+                        "$setUnion": {
+                            "$reduce": {
+                                "input": "$all_subjects",
+                                "initialValue": [],
+                                "in": {"$setUnion": ["$$value", "$$this"]}
+                            }
+                        }
+                    }
+                }
+            }}
+        ]
+        
+        result = await self.collection.aggregate(pipeline).to_list(1)
+        return result[0] if result else {}

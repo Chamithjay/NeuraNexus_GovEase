@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import connect_to_mongo, close_mongo_connection
 from routes.citizen_routes import router as citizen_router
+from routes.teacher_routes import router as teacher_router
 
 app = FastAPI(
     title="GovEase API",
@@ -20,6 +21,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(citizen_router)
+app.include_router(teacher_router)
 
 # Connect on startup
 @app.on_event("startup")

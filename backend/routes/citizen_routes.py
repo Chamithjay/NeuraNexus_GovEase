@@ -145,3 +145,57 @@ async def initialize_citizen_indexes(
         return {"message": "Citizen indexes created successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to create indexes: {str(e)}")
+
+
+# Teacher-specific endpoints
+@router.get("/teachers", response_model=List[CitizenResponse])
+async def get_all_teachers(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+    citizen_service: CitizenService = Depends(get_citizen_service)
+):
+    """Get all teachers"""
+    return await citizen_service.get_all_teachers(skip=skip, limit=limit)
+
+
+@router.get("/teachers/subject/{subject}", response_model=List[CitizenResponse])
+async def get_teachers_by_subject(
+    subject: str,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+    citizen_service: CitizenService = Depends(get_citizen_service)
+):
+    """Get teachers by subject"""
+    return await citizen_service.get_teachers_by_subject(subject, skip=skip, limit=limit)
+
+
+@router.get("/teachers/district/{district}", response_model=List[CitizenResponse])
+async def get_teachers_by_district(
+    district: str,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+    citizen_service: CitizenService = Depends(get_citizen_service)
+):
+    """Get teachers by district"""
+    return await citizen_service.get_teachers_by_district(district, skip=skip, limit=limit)
+
+
+@router.get("/teachers/experience", response_model=List[CitizenResponse])
+async def get_teachers_by_experience(
+    min_years: int = Query(..., ge=0, description="Minimum years of experience"),
+    max_years: int = Query(None, ge=0, description="Maximum years of experience"),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+    citizen_service: CitizenService = Depends(get_citizen_service)
+):
+    """Get teachers by years of experience"""
+    return await citizen_service.get_teachers_by_experience(min_years, max_years, skip=skip, limit=limit)
+
+
+@router.get("/teachers/statistics")
+async def get_teacher_statistics(
+    citizen_service: CitizenService = Depends(get_citizen_service)
+):
+    """Get teacher statistics"""
+    stats = await citizen_service.get_teacher_statistics()
+    return stats
