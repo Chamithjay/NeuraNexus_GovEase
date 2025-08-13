@@ -1,4 +1,8 @@
-# Miscellaneous
+# ==============================================
+# Flutter Frontend - Specific .gitignore
+# ==============================================
+
+# ==================== Miscellaneous ====================
 *.class
 *.log
 *.pyc
@@ -12,34 +16,174 @@
 .swiftpm/
 migrate_working_dir/
 
-# IntelliJ related
+# ==================== IntelliJ related ====================
 *.iml
 *.ipr
 *.iws
 .idea/
 
+# ==================== VS Code ====================
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
 #.vscode/
 
-# Flutter/Dart/Pub related
+# But exclude specific VS Code files that shouldn't be shared
+.vscode/settings.json
+.vscode/launch.json
+
+# ==================== Flutter/Dart/Pub related ====================
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
+.packages
 .pub-cache/
 .pub/
 /build/
 
-# Symbolication related
-app.*.symbols
+# Flutter generated files
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+*.gr.dart
+*.config.dart
 
-# Obfuscation related
-app.*.map.json
-
-# Android Studio will place build artifacts here
+# ==================== Platform-specific ====================
+# Android
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/.gradle/
+/android/captures/
+/android/gradlew
+/android/gradlew.bat
+/android/local.properties
+/android/key.properties
+/android/app/google-services.json
+
+# iOS
+/ios/Pods/
+/ios/.symlinks/
+/ios/Flutter/flutter_assets/
+/ios/Flutter/flutter_export_environment.sh
+/ios/Runner/GoogleService-Info.plist
+
+# macOS
+/macos/Flutter/ephemeral/
+/macos/Flutter/flutter_assets/
+
+# Linux
+/linux/flutter/ephemeral/
+
+# Windows
+/windows/flutter/ephemeral/
+
+# Web
+/web/flutter_service_worker.js
+/web/manifest.json.bak
+
+# ==================== Symbolication related ====================
+app.*.symbols
+
+# ==================== Obfuscation related ====================
+app.*.map.json
+
+# ==================== Testing ====================
+# Coverage reports
+coverage/
+test/.test_coverage.dart
+test_driver/screenshots/
+
+# ==================== Firebase ====================
+# Firebase configuration (add these if using Firebase)
+# android/app/google-services.json
+# ios/Runner/GoogleService-Info.plist
+# ios/firebase_app_id_file.json
+.firebase/
+firebase-debug.log
+.firebaserc
+firebase.json
+
+# ==================== Environment & Secrets ====================
+.env
+.env.local
+.env.*.local
+lib/config/api_keys.dart
+lib/config/secrets.dart
+
+# ==================== Build outputs ====================
+# APK files
+*.apk
+*.aab
+
+# IPA files
+*.ipa
+
+# App bundles
+*.app
+
+# ==================== Debugging ====================
+# Flutter debugging files
+.flutter-plugins-dependencies.bak
+
+# ==================== Dependencies ====================
+# pubspec.lock variations
+pubspec.lock.bak
+
+# ==================== Platform runners ====================
+# Android runner temp files
+android/app/src/debug/
+android/app/src/profile/
+
+# ==================== Localization ====================
+# Generated localization files
+lib/l10n/app_localizations*.dart
+lib/l10n/intl_*.arb
+
+# ==================== Code generation ====================
+# Generated router files
+lib/**/*.gr.dart
+
+# Generated model files
+lib/**/*.g.dart
+lib/**/*.freezed.dart
+
+# ==================== Assets ====================
+# Temporary asset files
+assets/temp/
+assets/*.tmp
+
+# ==================== Documentation ====================
+# Documentation build files
+doc/api/
+
+# ==================== IDE specific ====================
+# Android Studio
+.gradle/
+local.properties
+
+# Xcode
+*.xcworkspace
+!default.xcworkspace
+*.xcuserstate
+xcuserdata/
+
+# ==================== CI/CD ====================
+# GitHub Actions secrets
+.github/workflows/secrets/
+
+# ==================== Backup files ====================
+*.bak
+*.backup
+*.orig
+
+# ==================== Log files ====================
+*.log
+logs/
+flutter_*.log
+
+# ==================== Temporary directories ====================
+tmp/
+temp/
