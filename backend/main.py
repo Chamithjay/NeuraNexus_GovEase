@@ -4,6 +4,9 @@ from database import connect_to_mongo, close_mongo_connection
 from routes.citizen_routes import router as citizen_router
 from routes.teacher_routes import router as teacher_router
 from routes.transfer_request_routes import router as transfer_router
+from routes.admin_routes import router as admin_router
+from routes.citizen_notification_routes import router as notification_router
+from routes.websocket_routes import ws_router
 
 app = FastAPI(
     title="GovEase API",
@@ -24,6 +27,9 @@ app.add_middleware(
 app.include_router(citizen_router)
 app.include_router(teacher_router)
 app.include_router(transfer_router)
+app.include_router(admin_router)
+app.include_router(notification_router)
+app.include_router(ws_router)
 
 # Connect on startup
 @app.on_event("startup")

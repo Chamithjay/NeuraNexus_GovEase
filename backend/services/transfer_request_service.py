@@ -33,6 +33,16 @@ class TransferRequestService:
         return f"REQ{n:05d}"
 
     async def create_request(self, payload: TransferRequestCreate) -> TransferRequestResponse:
+        # Validate teacher eligibility (>=5 years in current district)
+        teacher = await self.database["teachers"].find_one({"teacher_id": payload.teacher_id})
+        if not teacher:
+            raise ValueError("Teacher not found")
+        years = teacher.get("years_in_service_district", 0)
+        if years is None:
+            years = 0
+        if int(years) < 5:
+            raise ValueError("Teacher is not eligible for transfer (requires at least 5 years in current district)")
+
         # Prepare model and generate request id
         next_seq = await self._next_request_sequence()
         request_id = self._format_request_id(next_seq)
