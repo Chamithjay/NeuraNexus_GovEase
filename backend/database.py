@@ -22,3 +22,10 @@ async def close_mongo_connection():
     if client:
         client.close()
         print("MongoDB connection closed")
+
+async def get_database():
+    """Get database instance"""
+    global db
+    if db is None:
+        await connect_to_mongo()
+    return db
