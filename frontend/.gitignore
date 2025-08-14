@@ -49,7 +49,7 @@ migrate_working_dir/
 *.mocks.dart
 *.gr.dart
 *.config.dart
-
+.vscode
 # ==================== Platform-specific ====================
 # Android
 /android/app/debug

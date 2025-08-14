@@ -28,3 +28,8 @@ def get_clinic_details_collection():
     if db is None:
         raise Exception("Database connection is not established. Call connect_to_mongo() first.")
     return db["clinic_details"]
+
+def get_clinic_appointments_collection():
+    if db is None:
+        raise Exception("Database connection is not established. Call connect_to_mongo() first.")
+    return db["clinic_appointments"]
