@@ -11,7 +11,7 @@ from services.citizen_service import CitizenService
 from services.teacher_service import TeacherService
 from realtime.websocket_manager import manager
 from services.admin_service import AdminService
-from config import SMTP_HOST, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD
+from config import SMTP_HOST, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, SMTP_FROM
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -177,7 +177,7 @@ async def agree_transfer(
         pass
     # If both agreed, email zonal admins for both districts
     try:
-        if tm.match_status == "AGREED":
+        if tm.match_status == "AGREED" and SMTP_USERNAME and SMTP_PASSWORD:
             reqA = await t_service.get_by_request_id(tm.request_a_id)
             reqB = await t_service.get_by_request_id(tm.request_b_id)
             teacherA = await teacher_service.get_teacher_by_id(reqA.teacher_id) if reqA else None
@@ -202,14 +202,14 @@ async def agree_transfer(
                 for admin in zonals:
                     try:
                         msg = MIMEMultipart()
-                        msg["From"] = SMTP_USERNAME
+                        msg["From"] = SMTP_FROM or SMTP_USERNAME
                         msg["To"] = admin.admin_email
                         msg["Subject"] = subject
                         msg.attach(MIMEText(body, "plain"))
                         with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
                             server.starttls()
                             server.login(SMTP_USERNAME, SMTP_PASSWORD)
-                            server.sendmail(SMTP_USERNAME, [admin.admin_email], msg.as_string())
+                            server.sendmail(SMTP_FROM or SMTP_USERNAME, [admin.admin_email], msg.as_string())
                     except Exception:
                         continue
     except Exception:
@@ -245,3 +245,55 @@ async def disagree_transfer(
     except Exception:
         pass
     return tm
+
+
+@router.delete("/{request_id}")
+async def cancel_transfer_request(
+    request_id: str,
+    t_service: TransferRequestService = Depends(get_transfer_service),
+    match_service: TransferMatchService = Depends(get_match_service),
+    notify: CitizenNotificationService = Depends(get_notification_service),
+    citizen_service: CitizenService = Depends(get_citizen_service_dep),
+):
+    """Cancel a transfer request and clean up any associated matches"""
+    req = await t_service.get_by_request_id(request_id)
+    if not req:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
+    # Check if request is part of any match and clean up
+    try:
+        # Find matches involving this request
+        matches_col = (await get_database())["transfer_matches"]
+        matches = await matches_col.find({
+            "$or": [
+                {"request_a_id": request_id},
+                {"request_b_id": request_id}
+            ]
+        }).to_list(None)
+        
+        for match in matches:
+            # Notify the other party if match exists
+            other_request_id = match["request_b_id"] if match["request_a_id"] == request_id else match["request_a_id"]
+            other_req = await t_service.get_by_request_id(other_request_id)
+            if other_req:
+                citizen = await citizen_service.get_citizen_by_teacher_id(other_req.teacher_id)
+                if citizen:
+                    await notify.create(
+                        citizen.citizen_id,
+                        NotificationType.GENERAL,
+                        f"Transfer match {match['matching_id']} was cancelled because the other party withdrew their request.",
+                        matching_id=match["matching_id"],
+                        request_id=other_request_id
+                    )
+            
+            # Delete the match
+            await matches_col.delete_one({"_id": match["_id"]})
+    except Exception:
+        pass  # Best effort cleanup
+    
+    # Delete the request
+    success = await t_service.delete_request(request_id)
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to cancel request")
+    
+    return {"message": "Transfer request cancelled successfully", "request_id": request_id}

@@ -114,3 +114,8 @@ class TransferRequestService:
         async for doc in cursor:
             out.append(TransferRequestResponse.from_mongo(doc))
         return out
+
+    async def delete_request(self, request_id: str) -> bool:
+        """Delete a transfer request"""
+        result = await self.collection.delete_one({"request_id": request_id})
+        return result.deleted_count > 0

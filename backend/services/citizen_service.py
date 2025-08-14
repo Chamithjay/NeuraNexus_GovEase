@@ -1,11 +1,14 @@
 import uuid
 from datetime import datetime
+import re
 from typing import List, Optional
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from bson import ObjectId
 from pymongo.errors import DuplicateKeyError
 
 from models.citizen import CitizenModel, CitizenCreate, CitizenUpdate, CitizenResponse
+from models.user import RoleEnum
+from services.user_service import UserService
 
 
 class CitizenService:
@@ -35,6 +38,20 @@ class CitizenService:
             
             # Create citizen document
             citizen_dict = citizen_data.dict()
+            # Normalize for uniqueness checks
+            if citizen_dict.get("email"):
+                citizen_dict["email"] = str(citizen_dict["email"]).strip().lower()
+            if citizen_dict.get("nic"):
+                citizen_dict["nic"] = str(citizen_dict["nic"]).strip().upper()
+
+            print(f"[CitizenService] Incoming create: email={citizen_dict.get('email')} nic={citizen_dict.get('nic')}")
+
+            # Pre-check duplicates within the citizens collection only (skip email pre-check; rely on DB unique index)
+            if citizen_dict.get("nic"):
+                exists_nic = await self.collection.find_one({"nic": citizen_dict["nic"]})
+                if exists_nic:
+                    print(f"[CitizenService] Duplicate NIC detected: {citizen_dict['nic']}")
+                    raise ValueError("NIC already exists in the system")
             citizen_dict["citizen_id"] = citizen_id
             citizen_dict["created_at"] = datetime.utcnow()
             citizen_dict["updated_at"] = datetime.utcnow()
@@ -45,7 +62,26 @@ class CitizenService:
             
             # Retrieve and return the created citizen
             created_citizen = await self.collection.find_one({"_id": result.inserted_id})
-            return CitizenResponse.from_mongo(created_citizen)
+            response = CitizenResponse.from_mongo(created_citizen)
+
+            # If password provided, create a corresponding User for login
+            if citizen_data.password:
+                user_service = UserService(self.database)
+                from models.user import UserCreate
+                try:
+                    await user_service.register(
+                        UserCreate(
+                            email=citizen_dict["email"],
+                            password=citizen_data.password,
+                            role=RoleEnum.CITIZEN,
+                            linked_citizen_id=response.citizen_id,
+                        )
+                    )
+                except ValueError:
+                    # If user already exists, ignore; citizen creation should not fail
+                    pass
+
+            return response
             
         except DuplicateKeyError as e:
             if "nic" in str(e):
@@ -71,10 +107,30 @@ class CitizenService:
 
     async def get_citizen_by_email(self, email: str) -> Optional[CitizenResponse]:
         """Get citizen by email"""
-        citizen = await self.collection.find_one({"email": email.lower()})
+        # Use case-insensitive exact match to align with duplicate checks during create
+        citizen = await self.collection.find_one({
+            "$expr": {"$eq": [{"$toLower": "$email"}, email.lower()]}
+        })
         if citizen:
             return CitizenResponse.from_mongo(citizen)
         return None
+
+    async def check_availability(self, *, email: Optional[str] = None, nic: Optional[str] = None) -> dict:
+        """Check if provided email or NIC already exist in citizens collection."""
+        email_exists = False
+        nic_exists = False
+        if email:
+            email_norm = str(email).strip().lower()
+            email_exists = await self.collection.find_one({
+                "$expr": {"$eq": [{"$toLower": "$email"}, email_norm]}
+            }) is not None
+        if nic:
+            nic_norm = str(nic).strip().upper()
+            nic_exists = await self.collection.find_one({"nic": nic_norm}) is not None
+        return {
+            "email_exists": email_exists,
+            "nic_exists": nic_exists,
+        }
 
     async def get_all_citizens(self, skip: int = 0, limit: int = 100, active_only: bool = True) -> List[CitizenResponse]:
         """Get all citizens with pagination"""
