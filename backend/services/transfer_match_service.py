@@ -5,6 +5,10 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from pymongo import ReturnDocument
 
 from models.transfer_match import TransferMatchModel, TransferMatchResponse, MatchStatus
+from realtime.websocket_manager import manager
+from services.citizen_service import CitizenService
+from services.citizen_notification_service import CitizenNotificationService
+from models.citizen_notification import NotificationType
 
 
 class TransferMatchService:
@@ -73,6 +77,20 @@ class TransferMatchService:
         updated = await self.collection.find_one_and_update(
             {"matching_id": matching_id},
             {"$set": {"agree_a": agree_a, "agree_b": agree_b, "match_status": status.value, "updated_at": datetime.utcnow()}},
+            return_document=ReturnDocument.AFTER,
+        )
+        return TransferMatchResponse.from_mongo(updated) if updated else None
+
+    async def disagree(self, matching_id: str, request_id: str) -> Optional[TransferMatchResponse]:
+        match = await self.collection.find_one({"matching_id": matching_id})
+        if not match:
+            return None
+        # A disagreement resets the match to PENDING (no agreement) and flags both agrees false
+        if request_id not in (match.get("request_a_id"), match.get("request_b_id")):
+            return None
+        updated = await self.collection.find_one_and_update(
+            {"matching_id": matching_id},
+            {"$set": {"agree_a": False, "agree_b": False, "match_status": MatchStatus.PENDING.value, "updated_at": datetime.utcnow()}},
             return_document=ReturnDocument.AFTER,
         )
         return TransferMatchResponse.from_mongo(updated) if updated else None

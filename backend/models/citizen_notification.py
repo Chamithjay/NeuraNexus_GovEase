@@ -13,8 +13,8 @@ class PyObjectId(ObjectId):
 
 
 class NotificationType(str, Enum):
-    TRANSFER_MATCH = "TRANSFER_MATCH"
-    TRANSFER_AGREEMENT = "TRANSFER_AGREEMENT"
+    GENERAL = "GENERAL"
+    TRANSFER = "TRANSFER"
 
 
 class CitizenNotificationModel(BaseModel):
@@ -25,6 +25,9 @@ class CitizenNotificationModel(BaseModel):
     description: str
     is_read: bool = False
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    # Actionable metadata for transfer-related notifications
+    matching_id: Optional[str] = None
+    request_id: Optional[str] = None
 
     model_config = {
         "populate_by_name": True,
@@ -41,11 +44,18 @@ class CitizenNotificationResponse(BaseModel):
     description: str
     is_read: bool
     created_at: datetime
+    matching_id: Optional[str] = None
+    request_id: Optional[str] = None
 
     @classmethod
     def from_mongo(cls, data: dict):
         if "_id" in data:
             data["_id"] = str(data["_id"])
+        # Backward compatibility: map old enum values to new ones
+        t = data.get("type")
+        if isinstance(t, str):
+            if t in {"TRANSFER_MATCH", "TRANSFER_AGREEMENT"}:
+                data["type"] = NotificationType.TRANSFER
         return cls(**data)
 
     model_config = {"populate_by_name": True}

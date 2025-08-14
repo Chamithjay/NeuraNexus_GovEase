@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import '../widgets/govease_header.dart';
 
 class MyRequestsScreen extends StatefulWidget {
   final String teacherId;
@@ -55,43 +56,11 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
     return Scaffold(
       body: Column(
         children: [
-          // Header matching Teacher Transfer/Educational Services
-          Container(
-            width: double.infinity,
+          GovEaseHeader(
             height: 220,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFF1A3251), Color(0xFF2B4A6B)],
-              ),
-            ),
-            child: SafeArea(
-              child: Stack(
-                children: [
-                  Positioned(
-                    left: 16,
-                    top: 10,
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ),
-                  const Positioned.fill(
-                    child: Center(
-                      child: Text(
-                        'My Transfer Requests',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            subtitle: 'Educational Services',
+            sectionTitle: 'My Transfer Requests',
+            onBack: () => Navigator.pop(context),
           ),
           Expanded(
             child: FutureBuilder<List<Map<String, dynamic>>>(
