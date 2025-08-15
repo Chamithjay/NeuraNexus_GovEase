@@ -113,7 +113,9 @@ class CitizenModel(BaseModel):
     @field_validator('date_of_birth')
     @classmethod
     def validate_date_of_birth(cls, v):
-        if v > datetime.now():
+        # Ensure aware vs naive comparison is handled
+        now = datetime.now(tz=v.tzinfo) if getattr(v, 'tzinfo', None) else datetime.utcnow()
+        if v > now:
             raise ValueError('Date of birth cannot be in the future')
         return v
 
@@ -158,6 +160,7 @@ class CitizenCreate(BaseModel):
     address: str = Field(..., description="Full address")
     contact_number: str = Field(..., description="Contact phone number")
     email: EmailStr = Field(..., description="Email address")
+    password: Optional[str] = Field(None, description="Optional password to create login user")
     
     # Optional link to teacher
     citizen_type: CitizenTypeEnum = Field(default=CitizenTypeEnum.CITIZEN, description="Type of citizen")

@@ -5,6 +5,8 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from pymongo.errors import DuplicateKeyError
 
 from models.admin import AdminModel, AdminCreate, AdminUpdate, AdminResponse
+from models.transfer_match import TransferMatchResponse
+from models.transfer_request import RequestStatus
 
 
 class AdminService:
@@ -78,3 +80,97 @@ class AdminService:
         async for d in cursor:
             out.append(AdminResponse.from_mongo(d))
         return out
+
+    async def list_matches_for_zones(self, zones: list[str], limit: int = 100, skip: int = 0) -> list[TransferMatchResponse]:
+        """List recent transfer matches involving teachers from any of the given zones.
+        A match is included if either request's teacher currently belongs to one of the zones.
+        """
+        matches_col = self.database["transfer_matches"]
+        reqs_col = self.database["transfer_requests"]
+        teachers_col = self.database["teachers"]
+
+        cursor = matches_col.find({}).sort("updated_at", -1).skip(skip).limit(limit)
+        results: list[dict] = []
+        async for m in cursor:
+            # Load requests
+            reqA = await reqs_col.find_one({"request_id": m.get("request_a_id")})
+            reqB = await reqs_col.find_one({"request_id": m.get("request_b_id")})
+            if not reqA or not reqB:
+                continue
+            # Load teachers
+            tA = await teachers_col.find_one({"teacher_id": reqA.get("teacher_id")})
+            tB = await teachers_col.find_one({"teacher_id": reqB.get("teacher_id")})
+            # Filter by zones participation
+            zoneA = (tA or {}).get("current_district")
+            zoneB = (tB or {}).get("current_district")
+            if zones and (zoneA not in zones and zoneB not in zones):
+                continue
+            # Build a public payload
+            results.append({
+                "matching_id": m.get("matching_id"),
+                "match_status": m.get("match_status"),
+                "updated_at": m.get("updated_at"),
+                "request_a": {
+                    "request_id": reqA.get("request_id"),
+                    "from_district": reqA.get("from_district"),
+                    "to_district": reqA.get("to_district"),
+                    "status": reqA.get("status"),
+                    "teacher": {
+                        "teacher_name": (tA or {}).get("teacher_name"),
+                        "current_district": (tA or {}).get("current_district"),
+                        "years_in_service_district": (tA or {}).get("years_in_service_district"),
+                        "subjects": (tA or {}).get("subjects", []),
+                        "school_id": (tA or {}).get("school_id"),
+                    }
+                },
+                "request_b": {
+                    "request_id": reqB.get("request_id"),
+                    "from_district": reqB.get("from_district"),
+                    "to_district": reqB.get("to_district"),
+                    "status": reqB.get("status"),
+                    "teacher": {
+                        "teacher_name": (tB or {}).get("teacher_name"),
+                        "current_district": (tB or {}).get("current_district"),
+                        "years_in_service_district": (tB or {}).get("years_in_service_district"),
+                        "subjects": (tB or {}).get("subjects", []),
+                        "school_id": (tB or {}).get("school_id"),
+                    }
+                },
+            })
+        return results
+
+    async def district_flow_stats(self, district: str) -> dict:
+        """Compute counts of transfer requests to and from the given district, per counterparty district.
+        Returns: { incoming: {fromDistrict: count}, outgoing: {toDistrict: count}, totals: {...} }
+        """
+        reqs_col = self.database["transfer_requests"]
+
+        # Incoming: to_district == district
+        incoming_pipeline = [
+            {"$match": {"to_district": district}},
+            {"$group": {"_id": "$from_district", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}},
+        ]
+        outgoing_pipeline = [
+            {"$match": {"from_district": district}},
+            {"$group": {"_id": "$to_district", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}},
+        ]
+
+        incoming: dict[str, int] = {}
+        outgoing: dict[str, int] = {}
+
+        async for row in reqs_col.aggregate(incoming_pipeline):
+            incoming[str(row["_id"]) if row.get("_id") is not None else "Unknown"] = int(row.get("count", 0))
+        async for row in reqs_col.aggregate(outgoing_pipeline):
+            outgoing[str(row["_id"]) if row.get("_id") is not None else "Unknown"] = int(row.get("count", 0))
+
+        return {
+            "district": district,
+            "incoming": incoming,
+            "outgoing": outgoing,
+            "totals": {
+                "incoming": sum(incoming.values()),
+                "outgoing": sum(outgoing.values()),
+            },
+        }

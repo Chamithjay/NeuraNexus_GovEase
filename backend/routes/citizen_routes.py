@@ -1,9 +1,11 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 
 from models.citizen import CitizenCreate, CitizenUpdate, CitizenResponse
 from services.citizen_service import CitizenService
+from services.user_service import UserService
+from models.user import UserCreate, RoleEnum
 from database import get_database
 
 router = APIRouter(prefix="/api/citizens", tags=["Citizens"])
@@ -14,18 +16,42 @@ async def get_citizen_service():
     db = await get_database()
     return CitizenService(db)
 
+async def get_user_service():
+    db = await get_database()
+    return UserService(db)
+
 
 @router.post("/", response_model=CitizenResponse, status_code=201)
 async def create_citizen(
     citizen_data: CitizenCreate,
-    citizen_service: CitizenService = Depends(get_citizen_service)
+    citizen_service: CitizenService = Depends(get_citizen_service),
 ):
     """Create a new citizen"""
     try:
-        return await citizen_service.create_citizen(citizen_data)
+        # Create citizen first (user creation handled inside service if password provided)
+        created = await citizen_service.create_citizen(citizen_data)
+        return created
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
+        # If service bubbled up an email duplicate via DuplicateKeyError mapping, surface as 409
+        msg = str(e)
+        if "Email already exists" in msg or "Duplicate entry" in msg:
+            raise HTTPException(status_code=409, detail=msg)
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.get("/availability")
+async def check_citizen_availability(
+    email: Optional[str] = None,
+    nic: Optional[str] = None,
+    citizen_service: CitizenService = Depends(get_citizen_service),
+):
+    """Quick check to see if an email or NIC already exist."""
+    try:
+        result = await citizen_service.check_availability(email=email, nic=nic)
+        return result
+    except Exception:
         raise HTTPException(status_code=500, detail="Internal server error")
 
 

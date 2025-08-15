@@ -12,7 +12,7 @@ from services.citizen_service import CitizenService
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from config import SMTP_HOST, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD
+from config import SMTP_HOST, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, SMTP_FROM
 
 
 class CitizenNotificationService:
@@ -90,22 +90,35 @@ class CitizenNotificationService:
         try:
             citizen_service = CitizenService(self.database)
             citizen = await citizen_service.get_citizen_by_id(citizen_id)
-            if citizen and citizen.email:
+            if citizen and citizen.email and SMTP_USERNAME and SMTP_PASSWORD:
+                print(f"Sending email to: {citizen.email}")
+                print(f"SMTP Config: {SMTP_HOST}:{SMTP_PORT} with user {SMTP_USERNAME}")
+                
                 subject = "GovEase - Notification"
                 if type == NotificationType.TRANSFER:
                     subject = "GovEase - Transfer Update"
+                    
                 msg = MIMEMultipart()
-                msg["From"] = SMTP_USERNAME
+                msg["From"] = SMTP_FROM or SMTP_USERNAME
                 msg["To"] = citizen.email
                 msg["Subject"] = subject
                 body = f"Hello {citizen.full_name},\n\n{description}\n\nThank you,\nGovEase"
                 msg.attach(MIMEText(body, "plain"))
+                
                 with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
                     server.starttls()
                     server.login(SMTP_USERNAME, SMTP_PASSWORD)
-                    server.sendmail(SMTP_USERNAME, [citizen.email], msg.as_string())
-        except Exception:
-            # ignore email failures in main flow
+                    server.sendmail(SMTP_FROM or SMTP_USERNAME, [citizen.email], msg.as_string())
+                    print(f"Email sent successfully to {citizen.email}")
+            else:
+                print(f"Email not sent - Missing config or citizen email:")
+                print(f"  Citizen: {citizen}")
+                print(f"  Citizen email: {citizen.email if citizen else 'No citizen'}")
+                print(f"  SMTP_USERNAME: {SMTP_USERNAME}")
+                print(f"  SMTP_PASSWORD: {'***' if SMTP_PASSWORD else 'None'}")
+        except Exception as e:
+            print(f"Email sending failed: {str(e)}")
+            # ignore email failures in main flow but log them
             pass
         return resp
 
