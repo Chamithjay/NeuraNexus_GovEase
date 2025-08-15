@@ -198,10 +198,12 @@ class _MyNotificationsScreenState extends State<MyNotificationsScreen> {
                                                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Network error')));
                                                     }
                                                   } finally {
-                                                    if (mounted) setState(() {
+                                                    if (mounted) {
+                                                      setState(() {
                                                       _actionLoading[id] = false;
                                                       _globalActionLoading = false;
                                                     });
+                                                    }
                                                   }
                                                 },
                                                 icon: const Icon(Icons.thumb_up_alt_outlined, color: Colors.white),
@@ -248,10 +250,12 @@ class _MyNotificationsScreenState extends State<MyNotificationsScreen> {
                                                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Network error')));
                                                     }
                                                   } finally {
-                                                    if (mounted) setState(() {
+                                                    if (mounted) {
+                                                      setState(() {
                                                       _actionLoading[id] = false;
                                                       _globalActionLoading = false;
                                                     });
+                                                    }
                                                   }
                                                 },
                                                 icon: const Icon(Icons.thumb_down_alt_outlined, color: Color(0xFF1A3251)),

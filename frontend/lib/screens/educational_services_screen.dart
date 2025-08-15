@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'teacher_transfer_screen.dart';
+import 'auth_screen.dart';
 
 class EducationalServicesScreen extends StatelessWidget {
   const EducationalServicesScreen({super.key});
@@ -7,223 +8,251 @@ class EducationalServicesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Header Section with gradient background
-            Container(
-              width: double.infinity,
-              height: 300, // Responsive height
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xFF1A3251), Color(0xFF2B4A6B)],
-                ),
-              ),
-              child: SafeArea(
-                child: Stack(
-                  children: [
-                    // Status bar elements (top right)
-                    Positioned(
-                      right: 30,
-                      top: 10,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 20,
-                            height: 14,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Container(
-                            width: 16,
-                            height: 14,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Container(
-                            width: 25,
-                            height: 12,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(1),
-                            ),
-                          ),
-                        ],
-                      ),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                // Header Section with gradient background
+                Container(
+                  width: double.infinity,
+                  height: 300, // Responsive height
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0xFF1A3251), Color(0xFF2B4A6B)],
                     ),
-
-                    // Back button (top left)
-                    Positioned(
-                      left: 30,
-                      top: 10,
-                      child: GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          width: 54,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.white,
-                            size: 24,
+                  ),
+                  child: SafeArea(
+                    child: Stack(
+                      children: [
+                        // Status bar elements (top right)
+                        Positioned(
+                          right: 30,
+                          top: 10,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 20,
+                                height: 14,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Container(
+                                width: 16,
+                                height: 14,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Container(
+                                width: 25,
+                                height: 12,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(1),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ),
 
-                    // Center content
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      top: 80,
-                      child: Column(
-                        children: [
-                          // GovEase title
-                          const Text(
-                            'GovEase',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 48,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w900,
+                        // Back button (top left)
+                        Positioned(
+                          left: 30,
+                          top: 10,
+                          child: GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: Container(
+                              width: 54,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Icon(
+                                Icons.arrow_back,
+                                color: Colors.white,
+                                size: 24,
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 16),
-                          // Welcome Back text
-                          const Text(
-                            'Welcome Back!',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontFamily: 'Open Sans',
-                              fontWeight: FontWeight.w400,
-                              height: 1.10,
-                            ),
+                        ),
+
+                        // Center content
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          top: 80,
+                          child: Column(
+                            children: [
+                              // GovEase title
+                              const Text(
+                                'GovEase',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 48,
+                                  fontFamily: 'Inter',
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              // Welcome Back text
+                              const Text(
+                                'Welcome Back!',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontFamily: 'Open Sans',
+                                  fontWeight: FontWeight.w400,
+                                  height: 1.10,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
 
-            // White section with Educational Services
-            Container(
-              width: double.infinity,
-              color: Colors.white,
-              padding: const EdgeInsets.all(30),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Educational Services title
-                  const Text(
-                    'Educational Services',
-                    style: TextStyle(
-                      color: Color(0xFF1A3251),
-                      fontSize: 32,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w700,
-                      height: 1.78,
-                    ),
-                  ),
+                // White section with Educational Services
+                Container(
+                  width: double.infinity,
+                  color: Colors.white,
+                  padding: const EdgeInsets.all(30),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Educational Services title
+                      const Text(
+                        'Educational Services',
+                        style: TextStyle(
+                          color: Color(0xFF1A3251),
+                          fontSize: 32,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w700,
+                          height: 1.78,
+                        ),
+                      ),
 
-                  const SizedBox(height: 30),
+                      const SizedBox(height: 30),
 
-                  // Services grid - responsive
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      double cardWidth =
-                          (constraints.maxWidth - 16) /
-                          2; // 2 cards per row with gap
-                      return Column(
-                        children: [
-                          // First row
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      // Services grid - responsive
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          double cardWidth =
+                              (constraints.maxWidth - 16) /
+                              2; // 2 cards per row with gap
+                          return Column(
                             children: [
-                              _buildServiceCard(
-                                width: cardWidth,
-                                title: 'Grade 1',
-                                subtitle: 'Admissions',
-                                imageAsset:
-                                    'assets/images/grade1.jpg', // Add your image here
-                                imageUrl: 'https://placehold.co/128x87',
-                                titleColor: const Color(0xFF1A3251),
-                                subtitleColor: const Color(0xFF354B66),
-                                onTap: () => _navigateToService(
-                                  context,
-                                  'Grade 1 Admissions',
-                                ),
+                              // First row
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  _buildServiceCard(
+                                    width: cardWidth,
+                                    title: 'Grade 1',
+                                    subtitle: 'Admissions',
+                                    imageAsset:
+                                        'assets/images/grade1.jpg', // Add your image here
+                                    imageUrl: 'https://placehold.co/128x87',
+                                    titleColor: const Color(0xFF1A3251),
+                                    subtitleColor: const Color(0xFF354B66),
+                                    onTap: () => _navigateToService(
+                                      context,
+                                      'Grade 1 Admissions',
+                                    ),
+                                  ),
+                                  _buildServiceCard(
+                                    width: cardWidth,
+                                    title: 'Grade 6',
+                                    subtitle: 'After Scholarship.',
+                                    imageAsset:
+                                        'assets/images/grade6.jpg', // Add your image here
+                                    imageUrl: 'https://placehold.co/105x87',
+                                    titleColor: const Color(0xFF1A3251),
+                                    subtitleColor: const Color(0xFF7E7F81),
+                                    isGrade6: true,
+                                    onTap: () => _navigateToService(
+                                      context,
+                                      'Grade 5 Scholarship',
+                                    ),
+                                  ),
+                                ],
                               ),
-                              _buildServiceCard(
-                                width: cardWidth,
-                                title: 'Grade 6',
-                                subtitle: 'After Scholarship.',
-                                imageAsset:
-                                    'assets/images/grade6.jpg', // Add your image here
-                                imageUrl: 'https://placehold.co/105x87',
-                                titleColor: const Color(0xFF1A3251),
-                                subtitleColor: const Color(0xFF7E7F81),
-                                isGrade6: true,
-                                onTap: () => _navigateToService(
-                                  context,
-                                  'Grade 5 Scholarship',
-                                ),
+
+                              const SizedBox(height: 20),
+
+                              // Second row
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  _buildServiceCard(
+                                    width: cardWidth,
+                                    title: 'A/L School Selection',
+                                    imageAsset:
+                                        'assets/images/al_school.jpg', // Add your image here
+                                    imageUrl: 'https://placehold.co/93x90',
+                                    titleColor: const Color(0xFF1A3251),
+                                    onTap: () => _navigateToService(
+                                      context,
+                                      'A/L School Selection',
+                                    ),
+                                  ),
+                                  _buildServiceCard(
+                                    width: cardWidth,
+                                    title: 'Teacher Transfers',
+                                    imageAsset:
+                                        'assets/images/teacher_transfer.jpg', // Add your image here
+                                    imageUrl: 'https://placehold.co/142x85',
+                                    titleColor: const Color(0xFF1A3251),
+                                    onTap: () => _navigateToService(
+                                      context,
+                                      'Teacher Transfers',
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
-                          ),
-
-                          const SizedBox(height: 20),
-
-                          // Second row
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              _buildServiceCard(
-                                width: cardWidth,
-                                title: 'A/L School Selection',
-                                imageAsset:
-                                    'assets/images/al_school.jpg', // Add your image here
-                                imageUrl: 'https://placehold.co/93x90',
-                                titleColor: const Color(0xFF1A3251),
-                                onTap: () => _navigateToService(
-                                  context,
-                                  'A/L School Selection',
-                                ),
-                              ),
-                              _buildServiceCard(
-                                width: cardWidth,
-                                title: 'Teacher Transfers',
-                                imageAsset:
-                                    'assets/images/teacher_transfer.jpg', // Add your image here
-                                imageUrl: 'https://placehold.co/142x85',
-                                titleColor: const Color(0xFF1A3251),
-                                onTap: () => _navigateToService(
-                                  context,
-                                  'Teacher Transfers',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                    },
+                          );
+                        },
+                      ),
+                      
+                      const SizedBox(height: 80), // Space for floating button
+                    ],
                   ),
-                ],
+                ),
+              ],
+            ),
+          ),
+          
+          // Floating Logout Button
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const AuthScreen()),
+                  (route) => false,
+                );
+              },
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+              icon: const Icon(Icons.logout),
+              label: const Text('Logout'),
+              elevation: 8,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

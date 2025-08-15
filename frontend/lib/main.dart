@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
+import 'screens/auth_screen.dart';
 
 void main() {
   runApp(const GovEaseApp());
@@ -24,7 +24,7 @@ class GovEaseApp extends StatelessWidget {
           elevation: 2,
         ),
       ),
-      home: const HomeScreen(),
+  home: const AuthScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
