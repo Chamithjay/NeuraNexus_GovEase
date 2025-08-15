@@ -72,19 +72,29 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         children: [
                           const Text(
                             'Select Admin Type',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<String>(
                             value: _selectedAdminType,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
-                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
                             ),
-                            items: _adminTypes.map((type) => DropdownMenuItem(
-                              value: type,
-                              child: Text(type),
-                            )).toList(),
+                            items: _adminTypes
+                                .map(
+                                  (type) => DropdownMenuItem(
+                                    value: type,
+                                    child: Text(type),
+                                  ),
+                                )
+                                .toList(),
                             onChanged: (value) {
                               setState(() {
                                 _selectedAdminType = value!;
@@ -124,7 +134,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         // Quick Actions Section
         Card(
           elevation: 3,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
@@ -140,7 +152,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               children: [
                 const Row(
                   children: [
-                    Icon(Icons.admin_panel_settings, color: Colors.white, size: 24),
+                    Icon(
+                      Icons.admin_panel_settings,
+                      color: Colors.white,
+                      size: 24,
+                    ),
                     SizedBox(width: 8),
                     Text(
                       'Zonal Administration',
@@ -186,7 +202,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         if (_showTransferMatches) ...[
           Card(
             elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
@@ -204,17 +222,24 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           color: const Color(0xFF059669).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(Icons.swap_horiz, color: Color(0xFF059669)),
+                        child: const Icon(
+                          Icons.swap_horiz,
+                          color: Color(0xFF059669),
+                        ),
                       ),
                       const SizedBox(width: 12),
                       const Expanded(
                         child: Text(
                           'Transfer Matches Management',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                       IconButton(
-                        onPressed: () => setState(() => _showTransferMatches = false),
+                        onPressed: () =>
+                            setState(() => _showTransferMatches = false),
                         icon: const Icon(Icons.close, color: Colors.grey),
                       ),
                     ],
@@ -241,14 +266,30 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       ElevatedButton.icon(
                         onPressed: _loadingMatches ? null : _loadMatches,
                         icon: _loadingMatches
-                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              )
                             : const Icon(Icons.search),
-                        label: Text(_loadingMatches ? 'Loading...' : 'Load Matches'),
+                        label: Text(
+                          _loadingMatches ? 'Loading...' : 'Load Matches',
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF059669),
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
                       ),
                     ],
@@ -266,7 +307,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         if (_showDistrictFlow) ...[
           Card(
             elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
@@ -284,17 +327,24 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           color: const Color(0xFF7C3AED).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(Icons.analytics, color: Color(0xFF7C3AED)),
+                        child: const Icon(
+                          Icons.analytics,
+                          color: Color(0xFF7C3AED),
+                        ),
                       ),
                       const SizedBox(width: 12),
                       const Expanded(
                         child: Text(
                           'District Flow Analytics',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                       IconButton(
-                        onPressed: () => setState(() => _showDistrictFlow = false),
+                        onPressed: () =>
+                            setState(() => _showDistrictFlow = false),
                         icon: const Icon(Icons.close, color: Colors.grey),
                       ),
                     ],
@@ -321,14 +371,30 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       ElevatedButton.icon(
                         onPressed: _loadingFlow ? null : _loadFlow,
                         icon: _loadingFlow
-                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              )
                             : const Icon(Icons.bar_chart),
-                        label: Text(_loadingFlow ? 'Loading...' : 'Load Analytics'),
+                        label: Text(
+                          _loadingFlow ? 'Loading...' : 'Load Analytics',
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF7C3AED),
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
                       ),
                     ],
@@ -445,7 +511,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     ElevatedButton(
                       onPressed: _loadingSchoolStats ? null : _loadSchoolStats,
                       child: _loadingSchoolStats
-                          ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
                           : const Text('Load'),
                     ),
                   ],
@@ -463,8 +533,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Widget _buildSchoolStatsSection() {
-    final gradeStats = Map<String, dynamic>.from(_schoolStats!['grade_stats'] as Map? ?? {});
-    
+    final gradeStats = Map<String, dynamic>.from(
+      _schoolStats!['grade_stats'] as Map? ?? {},
+    );
+
     return Column(
       children: [
         // Overview Cards
@@ -472,15 +544,27 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         const SizedBox(height: 20),
 
         // Grade 1 Section
-        _buildGradeSection('Grade 1', gradeStats['Grade 1'] as Map<String, dynamic>?, Colors.blue),
+        _buildGradeSection(
+          'Grade 1',
+          gradeStats['Grade 1'] as Map<String, dynamic>?,
+          Colors.blue,
+        ),
         const SizedBox(height: 16),
 
         // Grade 5 Section
-        _buildGradeSection('Grade 5', gradeStats['Grade 5'] as Map<String, dynamic>?, Colors.green),
+        _buildGradeSection(
+          'Grade 5',
+          gradeStats['Grade 5'] as Map<String, dynamic>?,
+          Colors.green,
+        ),
         const SizedBox(height: 16),
 
         // A/L Section
-        _buildGradeSection('A/L', gradeStats['A/L'] as Map<String, dynamic>?, Colors.orange),
+        _buildGradeSection(
+          'A/L',
+          gradeStats['A/L'] as Map<String, dynamic>?,
+          Colors.orange,
+        ),
       ],
     );
   }
@@ -500,16 +584,38 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
     return Row(
       children: [
-        Expanded(child: _buildMetricCard('Total Applications', totalApplications.toString(), Colors.blue)),
+        Expanded(
+          child: _buildMetricCard(
+            'Total Applications',
+            totalApplications.toString(),
+            Colors.blue,
+          ),
+        ),
         const SizedBox(width: 12),
-        Expanded(child: _buildMetricCard('Approved', totalApproved.toString(), Colors.green)),
+        Expanded(
+          child: _buildMetricCard(
+            'Approved',
+            totalApproved.toString(),
+            Colors.green,
+          ),
+        ),
         const SizedBox(width: 12),
-        Expanded(child: _buildMetricCard('Pending', totalPending.toString(), Colors.orange)),
+        Expanded(
+          child: _buildMetricCard(
+            'Pending',
+            totalPending.toString(),
+            Colors.orange,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildGradeSection(String grade, Map<String, dynamic>? gradeData, Color color) {
+  Widget _buildGradeSection(
+    String grade,
+    Map<String, dynamic>? gradeData,
+    Color color,
+  ) {
     if (gradeData == null) {
       return Card(
         elevation: 2,
@@ -518,7 +624,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(grade, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: color)),
+              Text(
+                grade,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: color,
+                ),
+              ),
               const SizedBox(height: 8),
               const Text('No applications yet'),
             ],
@@ -528,8 +641,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     }
 
     final total = gradeData['total'] as int? ?? 0;
-    final byStatus = Map<String, dynamic>.from(gradeData['by_status'] as Map? ?? {});
-    
+    final byStatus = Map<String, dynamic>.from(
+      gradeData['by_status'] as Map? ?? {},
+    );
+
     return Card(
       elevation: 2,
       child: Padding(
@@ -540,9 +655,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(grade, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: color)),
+                Text(
+                  grade,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: color,
+                  ),
+                ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
@@ -555,7 +680,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Status breakdown with pie chart
             Row(
               children: [
@@ -563,13 +688,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   flex: 2,
                   child: SizedBox(
                     height: 150,
-                    child: total > 0 ? PieChart(
-                      PieChartData(
-                        sections: _buildPieChartSections(byStatus, color),
-                        sectionsSpace: 2,
-                        centerSpaceRadius: 40,
-                      ),
-                    ) : const Center(child: Text('No data')),
+                    child: total > 0
+                        ? PieChart(
+                            PieChartData(
+                              sections: _buildPieChartSections(byStatus, color),
+                              sectionsSpace: 2,
+                              centerSpaceRadius: 40,
+                            ),
+                          )
+                        : const Center(child: Text('No data')),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -593,7 +720,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               ),
                               const SizedBox(width: 8),
                               Expanded(child: Text(entry.key)),
-                              Text('${entry.value}', style: const TextStyle(fontWeight: FontWeight.w600)),
+                              Text(
+                                '${entry.value}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -608,7 +740,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  List<PieChartSectionData> _buildPieChartSections(Map<String, dynamic> byStatus, Color baseColor) {
+  List<PieChartSectionData> _buildPieChartSections(
+    Map<String, dynamic> byStatus,
+    Color baseColor,
+  ) {
     final total = byStatus.values.fold(0, (sum, count) => sum + (count as int));
     if (total == 0) return [];
 
@@ -620,7 +755,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         title: '${percentage.toStringAsFixed(1)}%',
         color: _getStatusColor(entry.key, baseColor),
         radius: 50,
-        titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+        titleStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
       );
     }).toList();
   }
@@ -640,7 +779,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   Widget _buildMatchesList() {
     if (_loadingMatches) {
-      return const Center(child: Padding(padding: EdgeInsets.all(8), child: CircularProgressIndicator()));
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: CircularProgressIndicator(),
+        ),
+      );
     }
     if (_matches.isEmpty) {
       return const Text('No matches to display.');
@@ -701,10 +845,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${r['from_district']} -> ${r['to_district']}', style: const TextStyle(fontWeight: FontWeight.w600)),
-              Text('Teacher: ${t['teacher_name'] ?? '-'} (${t['current_district'] ?? '-'})'),
+              Text(
+                '${r['from_district']} -> ${r['to_district']}',
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              Text(
+                'Teacher: ${t['teacher_name'] ?? '-'} (${t['current_district'] ?? '-'})',
+              ),
               Text('Subjects: ${subjects ?? '-'}'),
-              Text('Years in district: ${t['years_in_service_district'] ?? '-'} | School: ${t['school_id'] ?? '-'}'),
+              Text(
+                'Years in district: ${t['years_in_service_district'] ?? '-'} | School: ${t['school_id'] ?? '-'}',
+              ),
             ],
           ),
         ),
@@ -730,14 +881,25 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
-      child: Text(status ?? 'PENDING', style: TextStyle(color: fg, fontWeight: FontWeight.w600)),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        status ?? 'PENDING',
+        style: TextStyle(color: fg, fontWeight: FontWeight.w600),
+      ),
     );
   }
 
   Widget _buildFlowStats() {
     if (_loadingFlow) {
-      return const Center(child: Padding(padding: EdgeInsets.all(8), child: CircularProgressIndicator()));
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: CircularProgressIndicator(),
+        ),
+      );
     }
     if (_flow == null) {
       return const Text('No analytics to display.');
@@ -745,20 +907,32 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final incoming = Map<String, dynamic>.from(_flow!['incoming'] as Map);
     final outgoing = Map<String, dynamic>.from(_flow!['outgoing'] as Map);
     final totals = Map<String, dynamic>.from(_flow!['totals'] as Map);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Summary metrics
         Row(
           children: [
-            Expanded(child: _buildMetricCard('Incoming', totals['incoming']?.toString() ?? '0', const Color(0xFF0EA5E9))),
+            Expanded(
+              child: _buildMetricCard(
+                'Incoming',
+                totals['incoming']?.toString() ?? '0',
+                const Color(0xFF0EA5E9),
+              ),
+            ),
             const SizedBox(width: 12),
-            Expanded(child: _buildMetricCard('Outgoing', totals['outgoing']?.toString() ?? '0', const Color(0xFFF59E0B))),
+            Expanded(
+              child: _buildMetricCard(
+                'Outgoing',
+                totals['outgoing']?.toString() ?? '0',
+                const Color(0xFFF59E0B),
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 20),
-        
+
         // Bar charts
         Row(
           children: [
@@ -766,7 +940,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Incoming Requests', style: TextStyle(fontWeight: FontWeight.w700)),
+                  const Text(
+                    'Incoming Requests',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
                   const SizedBox(height: 8),
                   SizedBox(
                     height: 200,
@@ -780,7 +957,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Outgoing Requests', style: TextStyle(fontWeight: FontWeight.w700)),
+                  const Text(
+                    'Outgoing Requests',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
                   const SizedBox(height: 8),
                   SizedBox(
                     height: 200,
@@ -824,7 +1004,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           );
         }).toList(),
         titlesData: FlTitlesData(
-          leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: true, reservedSize: 40)),
+          leftTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: true, reservedSize: 40),
+          ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
@@ -848,8 +1030,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               },
             ),
           ),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
         ),
         borderData: FlBorderData(show: false),
         gridData: const FlGridData(show: true),
@@ -868,9 +1054,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: TextStyle(color: color, fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 8),
-          Text(value, style: TextStyle(color: color, fontSize: 20, fontWeight: FontWeight.w800)),
+          Text(
+            value,
+            style: TextStyle(
+              color: color,
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
         ],
       ),
     );
@@ -880,10 +1076,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     setState(() => _loadingMatches = true);
     try {
       final zones = _zonesController.text.trim();
-      final uri = Uri.parse('$_baseUrl/api/admin-analytics/matches${zones.isNotEmpty ? '?zones=${Uri.encodeComponent(zones)}' : ''}');
+      final uri = Uri.parse(
+        '$_baseUrl/api/admin-analytics/matches${zones.isNotEmpty ? '?zones=${Uri.encodeComponent(zones)}' : ''}',
+      );
       final res = await http.get(uri, headers: {'Accept': 'application/json'});
       if (res.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(res.body) as Map<String, dynamic>;
+        final Map<String, dynamic> data =
+            json.decode(res.body) as Map<String, dynamic>;
         setState(() => _matches = (data['items'] as List?) ?? []);
       } else {
         _showSnack('Failed to load matches (${res.statusCode}).');
@@ -903,10 +1102,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         _showSnack('Enter a district');
         return;
       }
-      final uri = Uri.parse('$_baseUrl/api/admin-analytics/district-flow/${Uri.encodeComponent(district)}');
+      final uri = Uri.parse(
+        '$_baseUrl/api/admin-analytics/district-flow/${Uri.encodeComponent(district)}',
+      );
       final res = await http.get(uri, headers: {'Accept': 'application/json'});
       if (res.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(res.body) as Map<String, dynamic>;
+        final Map<String, dynamic> data =
+            json.decode(res.body) as Map<String, dynamic>;
         setState(() => _flow = data);
       } else {
         _showSnack('Failed to load analytics (${res.statusCode}).');
@@ -929,7 +1131,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       final uri = Uri.parse('$_baseUrl/api/demo/school-stats/$schoolId');
       final res = await http.get(uri, headers: {'Accept': 'application/json'});
       if (res.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(res.body) as Map<String, dynamic>;
+        final Map<String, dynamic> data =
+            json.decode(res.body) as Map<String, dynamic>;
         setState(() => _schoolStats = data);
       } else {
         _showSnack('Failed to load school stats (${res.statusCode}).');

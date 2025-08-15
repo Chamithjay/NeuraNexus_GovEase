@@ -56,7 +56,9 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                   onNotifications: () {
                     final cid = _citizenIdController.text.trim();
                     if (cid.isEmpty) {
-                      _showErrorDialog('Enter your Citizen ID to view notifications');
+                      _showErrorDialog(
+                        'Enter your Citizen ID to view notifications',
+                      );
                       return;
                     }
                     Navigator.of(context).push(
@@ -182,7 +184,9 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                             onPressed: () {
                               final id = _teacherIdController.text.trim();
                               if (id.isEmpty) {
-                                _showErrorDialog('Enter Teacher ID to view requests');
+                                _showErrorDialog(
+                                  'Enter Teacher ID to view requests',
+                                );
                                 return;
                               }
                               Navigator.of(context).push(
@@ -201,7 +205,7 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 80), // Space for floating button
               ],
             ),
@@ -211,10 +215,14 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
             Container(
               color: Colors.white.withOpacity(0.6),
               child: const Center(
-                child: SizedBox(width: 36, height: 36, child: CircularProgressIndicator()),
+                child: SizedBox(
+                  width: 36,
+                  height: 36,
+                  child: CircularProgressIndicator(),
+                ),
               ),
             ),
-            
+
           // Floating Logout Button
           Positioned(
             bottom: 20,
@@ -251,20 +259,31 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
 
       // 1) Pre-check: block if teacher already has a Waiting List request to the same district
       try {
-        final listUri = Uri.parse('$_baseUrl/api/transfer-requests/teacher/${Uri.encodeComponent(id)}');
-        final listRes = await http.get(listUri, headers: {'Accept': 'application/json'});
+        final listUri = Uri.parse(
+          '$_baseUrl/api/transfer-requests/teacher/${Uri.encodeComponent(id)}',
+        );
+        final listRes = await http.get(
+          listUri,
+          headers: {'Accept': 'application/json'},
+        );
         if (listRes.statusCode == 200) {
           final List<dynamic> data = json.decode(listRes.body) as List<dynamic>;
-          String norm(String s) => s.toLowerCase().replaceAll(RegExp(r'[^a-z]'), '');
+          String norm(String s) =>
+              s.toLowerCase().replaceAll(RegExp(r'[^a-z]'), '');
           final wantTo = norm(reqDistrict);
           final hasSameWaiting = data.any((e) {
             final m = e as Map<String, dynamic>;
             final status = norm((m['status'] ?? '').toString());
             final to = norm((m['to_district'] ?? '').toString());
-            return (status == 'waitinglist' || status == 'waiting' || status == 'waitingqueue') && to == wantTo;
+            return (status == 'waitinglist' ||
+                    status == 'waiting' ||
+                    status == 'waitingqueue') &&
+                to == wantTo;
           });
           if (hasSameWaiting) {
-            _showErrorDialog('You already have a transfer request to "$reqDistrict" in the Waiting List. You cannot submit another request for the same district.');
+            _showErrorDialog(
+              'You already have a transfer request to "$reqDistrict" in the Waiting List. You cannot submit another request for the same district.',
+            );
             return;
           }
         }
@@ -273,14 +292,19 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
       }
 
       // 2) Fetch teacher details as usual
-      final uri = Uri.parse('$_baseUrl/api/teachers/${Uri.encodeComponent(id)}');
+      final uri = Uri.parse(
+        '$_baseUrl/api/teachers/${Uri.encodeComponent(id)}',
+      );
       final res = await http.get(uri, headers: {'Accept': 'application/json'});
       if (res.statusCode == 200) {
-        final Map<String, dynamic> t = json.decode(res.body) as Map<String, dynamic>;
+        final Map<String, dynamic> t =
+            json.decode(res.body) as Map<String, dynamic>;
         // Eligibility gate: require at least 5 years in service in district
         final years = ((t['years_in_service_district'] ?? 0) as num).toInt();
         if (years < 5) {
-          _showErrorDialog('Ineligible for transfer: requires at least 5 years in the current district (Current: $years).');
+          _showErrorDialog(
+            'Ineligible for transfer: requires at least 5 years in the current district (Current: $years).',
+          );
           return;
         }
         _showTeacherConfirmDialog(t);
@@ -301,7 +325,7 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final years = ((t['years_in_service_district'] ?? 0) as num).toInt();
     final eligible = years >= 5;
-    
+
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -329,7 +353,10 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                     const Expanded(
                       child: Text(
                         'Teacher Details',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                     IconButton(
@@ -339,20 +366,31 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Eligibility banner
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: eligible ? const Color(0xFFDCFCE7) : const Color(0xFFFEE2E2),
-                    border: Border.all(color: eligible ? const Color(0xFF16A34A) : const Color(0xFFDC2626)),
+                    color: eligible
+                        ? const Color(0xFFDCFCE7)
+                        : const Color(0xFFFEE2E2),
+                    border: Border.all(
+                      color: eligible
+                          ? const Color(0xFF16A34A)
+                          : const Color(0xFFDC2626),
+                    ),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
-                      Icon(eligible ? Icons.verified : Icons.block,
-                          color: eligible ? const Color(0xFF16A34A) : const Color(0xFFDC2626), size: 20),
+                      Icon(
+                        eligible ? Icons.verified : Icons.block,
+                        color: eligible
+                            ? const Color(0xFF16A34A)
+                            : const Color(0xFFDC2626),
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -360,7 +398,9 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                               ? 'Eligible for transfer ($years years in district)'
                               : 'Ineligible: requires ≥5 years (current: $years)',
                           style: TextStyle(
-                            color: eligible ? const Color(0xFF14532D) : const Color(0xFF7F1D1D),
+                            color: eligible
+                                ? const Color(0xFF14532D)
+                                : const Color(0xFF7F1D1D),
                             fontWeight: FontWeight.w600,
                             fontSize: 13,
                           ),
@@ -370,7 +410,7 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Teacher info in organized sections
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -393,7 +433,11 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.person, color: Colors.white, size: 20),
+                            const Icon(
+                              Icons.person,
+                              color: Colors.white,
+                              size: 20,
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -406,92 +450,122 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
                                 'ID: ${t['teacher_id']}',
-                                style: const TextStyle(color: Colors.white, fontSize: 12),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Basic Information Section
                       _buildInfoSection(
                         title: 'Basic Information',
                         icon: Icons.info_outline,
                         color: const Color(0xFF059669),
                         items: [
-                          _buildDetailRow('Current District', t['current_district']),
+                          _buildDetailRow(
+                            'Current District',
+                            t['current_district'],
+                          ),
                           _buildDetailRow('School ID', t['school_id']),
-                          _buildDetailRow('Years in District', years.toString()),
+                          _buildDetailRow(
+                            'Years in District',
+                            years.toString(),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 12),
-                      
+
                       // Academic Information Section
                       _buildInfoSection(
                         title: 'Academic Details',
                         icon: Icons.school,
                         color: const Color(0xFF7C3AED),
                         items: [
-                          _buildDetailRow('Subjects', (t['subjects'] as List?)?.join(', ') ?? 'N/A'),
-                          _buildDetailRow('Teaching Experience', '$years years'),
+                          _buildDetailRow(
+                            'Subjects',
+                            (t['subjects'] as List?)?.join(', ') ?? 'N/A',
+                          ),
+                          _buildDetailRow(
+                            'Teaching Experience',
+                            '$years years',
+                          ),
                         ],
                       ),
                       const SizedBox(height: 12),
-                      
+
                       // Contact Information Section
                       if (t['phone'] != null) ...[
                         _buildInfoSection(
                           title: 'Contact Information',
                           icon: Icons.contact_phone,
                           color: const Color(0xFFF59E0B),
-                          items: [
-                            _buildDetailRow('Phone', t['phone']),
-                          ],
+                          items: [_buildDetailRow('Phone', t['phone'])],
                         ),
                       ],
                     ],
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Request summary
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1A3251).withOpacity(0.05),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFF1A3251).withOpacity(0.2)),
+                    border: Border.all(
+                      color: const Color(0xFF1A3251).withOpacity(0.2),
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
                         'Transfer Request Summary',
-                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
                       ),
                       const SizedBox(height: 8),
-                      Text('${_currentDistrictController.text} → ${_requestingDistrictController.text}',
-                           style: const TextStyle(fontWeight: FontWeight.w600)),
+                      Text(
+                        '${_currentDistrictController.text} → ${_requestingDistrictController.text}',
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
                       const SizedBox(height: 4),
-                      Text('Applicant: ${_nameController.text}', style: const TextStyle(fontSize: 13)),
+                      Text(
+                        'Applicant: ${_nameController.text}',
+                        style: const TextStyle(fontSize: 13),
+                      ),
                       if (_reasonController.text.isNotEmpty) ...[
                         const SizedBox(height: 4),
-                        Text('Reason: ${_reasonController.text}', 
-                             style: const TextStyle(fontSize: 13), maxLines: 2, overflow: TextOverflow.ellipsis),
+                        Text(
+                          'Reason: ${_reasonController.text}',
+                          style: const TextStyle(fontSize: 13),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ],
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
-                
+
                 // Action buttons
                 Row(
                   children: [
@@ -532,7 +606,14 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w500)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 11,
+            color: Colors.grey,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         const SizedBox(height: 2),
         Text(
           value?.toString() ?? 'N/A',
@@ -634,19 +715,28 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
         _showErrorDialog('Failed to submit request (${res.statusCode}).');
         return;
       }
-      final Map<String, dynamic> created = json.decode(res.body) as Map<String, dynamic>;
+      final Map<String, dynamic> created =
+          json.decode(res.body) as Map<String, dynamic>;
       final requestId = created['request_id'] as String;
 
       // Check for match
-      final matchUri = Uri.parse('$_baseUrl/api/transfer-requests/match/$requestId');
-      final matchRes = await http.get(matchUri, headers: {'Accept': 'application/json'});
+      final matchUri = Uri.parse(
+        '$_baseUrl/api/transfer-requests/match/$requestId',
+      );
+      final matchRes = await http.get(
+        matchUri,
+        headers: {'Accept': 'application/json'},
+      );
       if (matchRes.statusCode == 200) {
-        final Map<String, dynamic> payload = json.decode(matchRes.body) as Map<String, dynamic>;
+        final Map<String, dynamic> payload =
+            json.decode(matchRes.body) as Map<String, dynamic>;
         final matched = payload['matched'] == true;
         if (matched) {
           final matchReq = payload['match_request'] as Map<String, dynamic>;
-          final matchedTeacher = payload['matched_teacher'] as Map<String, dynamic>?;
-          final transferMatch = payload['transfer_match'] as Map<String, dynamic>?;
+          final matchedTeacher =
+              payload['matched_teacher'] as Map<String, dynamic>?;
+          final transferMatch =
+              payload['transfer_match'] as Map<String, dynamic>?;
           _showMatchDialog(requestId, matchReq, matchedTeacher, transferMatch);
         } else {
           _showNoMatchDialog(requestId);
@@ -654,7 +744,11 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Request submitted: $requestId (match check failed)')),
+            SnackBar(
+              content: Text(
+                'Request submitted: $requestId (match check failed)',
+              ),
+            ),
           );
         }
       }
@@ -691,6 +785,7 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                 setStateDialog(() => isPosting = false);
               }
             }
+
             return Stack(
               children: [
                 Container(
@@ -713,7 +808,11 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.done_all, color: Colors.white, size: 24),
+                              const Icon(
+                                Icons.done_all,
+                                color: Colors.white,
+                                size: 24,
+                              ),
                               const SizedBox(width: 12),
                               const Expanded(
                                 child: Text(
@@ -727,13 +826,16 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                               ),
                               IconButton(
                                 onPressed: () => Navigator.of(context).pop(),
-                                icon: const Icon(Icons.close, color: Colors.white),
+                                icon: const Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                ),
                               ),
                             ],
                           ),
                         ),
                         const SizedBox(height: 16),
-                        
+
                         // Match summary in compact grid
                         Container(
                           padding: const EdgeInsets.all(12),
@@ -747,42 +849,68 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                             children: [
                               const Text(
                                 'Match Details',
-                                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
                               ),
                               const SizedBox(height: 12),
-                              
+
                               // Request IDs row
                               Row(
                                 children: [
-                                  Expanded(child: _compactInfoTile('Your Request', requestId)),
+                                  Expanded(
+                                    child: _compactInfoTile(
+                                      'Your Request',
+                                      requestId,
+                                    ),
+                                  ),
                                   const SizedBox(width: 12),
-                                  Expanded(child: _compactInfoTile('Match Request', matchReq['request_id']?.toString() ?? 'N/A')),
+                                  Expanded(
+                                    child: _compactInfoTile(
+                                      'Match Request',
+                                      matchReq['request_id']?.toString() ??
+                                          'N/A',
+                                    ),
+                                  ),
                                 ],
                               ),
                               const SizedBox(height: 8),
-                              
+
                               // District transfer
                               Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF1A3251).withOpacity(0.05),
+                                  color: const Color(
+                                    0xFF1A3251,
+                                  ).withOpacity(0.05),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Column(
                                   children: [
-                                    Text('${matchReq['from_district']} ⇄ ${matchReq['to_district']}',
-                                         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                                    Text(
+                                      '${matchReq['from_district']} ⇄ ${matchReq['to_district']}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14,
+                                      ),
+                                    ),
                                     const SizedBox(height: 4),
                                     if (transferMatch != null)
-                                      Text('Match ID: ${transferMatch['matching_id']}',
-                                           style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                                      Text(
+                                        'Match ID: ${transferMatch['matching_id']}',
+                                        style: const TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
                                   ],
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        
+
                         // Other teacher details (if available)
                         if (matchedTeacher != null) ...[
                           const SizedBox(height: 12),
@@ -791,29 +919,55 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                             decoration: BoxDecoration(
                               color: const Color(0xFF1A3251).withOpacity(0.05),
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: const Color(0xFF1A3251).withOpacity(0.2)),
+                              border: Border.all(
+                                color: const Color(0xFF1A3251).withOpacity(0.2),
+                              ),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
                                   'Other Teacher',
-                                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                  ),
                                 ),
                                 const SizedBox(height: 8),
                                 Row(
                                   children: [
-                                    Expanded(child: _compactInfoTile('Name', matchedTeacher['teacher_name'])),
+                                    Expanded(
+                                      child: _compactInfoTile(
+                                        'Name',
+                                        matchedTeacher['teacher_name'],
+                                      ),
+                                    ),
                                     const SizedBox(width: 12),
-                                    Expanded(child: _compactInfoTile('District', matchedTeacher['current_district'])),
+                                    Expanded(
+                                      child: _compactInfoTile(
+                                        'District',
+                                        matchedTeacher['current_district'],
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 8),
                                 Row(
                                   children: [
-                                    Expanded(child: _compactInfoTile('Years', matchedTeacher['years_in_service_district']?.toString())),
+                                    Expanded(
+                                      child: _compactInfoTile(
+                                        'Years',
+                                        matchedTeacher['years_in_service_district']
+                                            ?.toString(),
+                                      ),
+                                    ),
                                     const SizedBox(width: 12),
-                                    Expanded(child: _compactInfoTile('Phone', matchedTeacher['phone'])),
+                                    Expanded(
+                                      child: _compactInfoTile(
+                                        'Phone',
+                                        matchedTeacher['phone'],
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -821,7 +975,7 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                           ),
                         ],
                         const SizedBox(height: 16),
-                        
+
                         // Action notice
                         Container(
                           padding: const EdgeInsets.all(12),
@@ -832,7 +986,11 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.info_outline, color: Colors.orange[700], size: 20),
+                              Icon(
+                                Icons.info_outline,
+                                color: Colors.orange[700],
+                                size: 20,
+                              ),
                               const SizedBox(width: 8),
                               const Expanded(
                                 child: Text(
@@ -844,7 +1002,7 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        
+
                         // Action buttons
                         Row(
                           children: [
@@ -862,20 +1020,43 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                                       ? null
                                       : () async {
                                           await withPosting(() async {
-                                            final matchingId = transferMatch['matching_id']?.toString() ?? '';
-                                            final uri = Uri.parse('$_baseUrl/api/transfer-requests/match/$matchingId/disagree?request_id=${Uri.encodeComponent(requestId)}');
-                                            final res = await http.post(uri, headers: {'Accept': 'application/json'});
+                                            final matchingId =
+                                                transferMatch['matching_id']
+                                                    ?.toString() ??
+                                                '';
+                                            final uri = Uri.parse(
+                                              '$_baseUrl/api/transfer-requests/match/$matchingId/disagree?request_id=${Uri.encodeComponent(requestId)}',
+                                            );
+                                            final res = await http.post(
+                                              uri,
+                                              headers: {
+                                                'Accept': 'application/json',
+                                              },
+                                            );
                                             if (res.statusCode == 200) {
-                                              if (mounted) Navigator.of(context).pop();
-                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('You disagreed with this match.')));
+                                              if (mounted)
+                                                Navigator.of(context).pop();
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                    'You disagreed with this match.',
+                                                  ),
+                                                ),
+                                              );
                                             } else {
-                                              _showErrorDialog('Failed to disagree (${res.statusCode}).');
+                                              _showErrorDialog(
+                                                'Failed to disagree (${res.statusCode}).',
+                                              );
                                             }
                                           });
                                         },
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: const Color(0xFFDC2626),
-                                    side: const BorderSide(color: Color(0xFFDC2626)),
+                                    side: const BorderSide(
+                                      color: Color(0xFFDC2626),
+                                    ),
                                   ),
                                   child: const Text('Disagree'),
                                 ),
@@ -888,19 +1069,40 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                                       ? null
                                       : () async {
                                           await withPosting(() async {
-                                            final matchingId = transferMatch['matching_id']?.toString() ?? '';
-                                            final uri = Uri.parse('$_baseUrl/api/transfer-requests/match/$matchingId/agree?request_id=${Uri.encodeComponent(requestId)}');
-                                            final res = await http.post(uri, headers: {'Accept': 'application/json'});
+                                            final matchingId =
+                                                transferMatch['matching_id']
+                                                    ?.toString() ??
+                                                '';
+                                            final uri = Uri.parse(
+                                              '$_baseUrl/api/transfer-requests/match/$matchingId/agree?request_id=${Uri.encodeComponent(requestId)}',
+                                            );
+                                            final res = await http.post(
+                                              uri,
+                                              headers: {
+                                                'Accept': 'application/json',
+                                              },
+                                            );
                                             if (res.statusCode == 200) {
-                                              final Map<String, dynamic> m = json.decode(res.body) as Map<String, dynamic>;
-                                              final status = (m['match_status'] ?? '').toString();
-                                              if (mounted) Navigator.of(context).pop();
+                                              final Map<String, dynamic> m =
+                                                  json.decode(res.body)
+                                                      as Map<String, dynamic>;
+                                              final status =
+                                                  (m['match_status'] ?? '')
+                                                      .toString();
+                                              if (mounted)
+                                                Navigator.of(context).pop();
                                               final msg = status == 'AGREED'
                                                   ? 'Both teachers agreed. Admin will be notified.'
                                                   : 'Your agreement is recorded. Waiting for the other teacher.';
-                                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(content: Text(msg)),
+                                              );
                                             } else {
-                                              _showErrorDialog('Failed to approve transfer (${res.statusCode}).');
+                                              _showErrorDialog(
+                                                'Failed to approve transfer (${res.statusCode}).',
+                                              );
                                             }
                                           });
                                         },
@@ -927,7 +1129,9 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                       ),
                       child: const Center(
                         child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
                         ),
                       ),
                     ),
@@ -976,7 +1180,7 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // Title and message
               const Text(
                 'No Exact Match Found',
@@ -997,7 +1201,7 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              
+
               // Action buttons
               Row(
                 children: [
@@ -1013,21 +1217,32 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                     child: ElevatedButton(
                       onPressed: () async {
                         Navigator.of(context).pop();
-                        final uri = Uri.parse('$_baseUrl/api/transfer-requests/$requestId/waiting-list');
+                        final uri = Uri.parse(
+                          '$_baseUrl/api/transfer-requests/$requestId/waiting-list',
+                        );
                         try {
-                          final res = await http.post(uri, headers: {'Accept': 'application/json'});
+                          final res = await http.post(
+                            uri,
+                            headers: {'Accept': 'application/json'},
+                          );
                           if (res.statusCode == 200) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('Added to waiting list: $requestId'),
+                                content: Text(
+                                  'Added to waiting list: $requestId',
+                                ),
                                 backgroundColor: const Color(0xFF10B981),
                               ),
                             );
                           } else {
-                            _showErrorDialog('Failed to add to waiting list (${res.statusCode}).');
+                            _showErrorDialog(
+                              'Failed to add to waiting list (${res.statusCode}).',
+                            );
                           }
                         } catch (_) {
-                          _showErrorDialog('Network error adding to waiting list.');
+                          _showErrorDialog(
+                            'Network error adding to waiting list.',
+                          );
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -1082,7 +1297,7 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // Title and message
               const Text(
                 'Error',
@@ -1103,7 +1318,7 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              
+
               // OK button
               SizedBox(
                 width: double.infinity,
@@ -1159,5 +1374,4 @@ class _TeacherTransferScreenState extends State<TeacherTransferScreen> {
       ],
     );
   }
-
 }

@@ -82,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                
+
                 // Welcome Header
                 Container(
                   width: double.infinity,
@@ -117,9 +117,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       Text(
                         isLoading
                             ? 'Welcome to GovEase\nLoading...'
-                            : widget.citizenId != null && widget.citizenId!.isNotEmpty && citizenName.isNotEmpty
-                                ? 'Welcome to GovEase\n$citizenName'
-                                : 'Welcome to GovEase',
+                            : widget.citizenId != null &&
+                                  widget.citizenId!.isNotEmpty &&
+                                  citizenName.isNotEmpty
+                            ? 'Welcome to GovEase\n$citizenName'
+                            : 'Welcome to GovEase',
                         style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -168,7 +170,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const EducationalServicesScreen(),
+                          builder: (context) =>
+                              const EducationalServicesScreen(),
                         ),
                       ),
                     ),
@@ -249,7 +252,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           _buildQuickAccessItem(
                             Icons.history,
                             'Application History',
-                            () => _showComingSoon(context, 'Application History'),
+                            () =>
+                                _showComingSoon(context, 'Application History'),
                           ),
                         ],
                       ),
@@ -291,12 +295,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: 80), // Space for floating button
               ],
             ),
           ),
-          
+
           // Floating Logout Button
           Positioned(
             bottom: 20,

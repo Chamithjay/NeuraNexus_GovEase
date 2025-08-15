@@ -24,7 +24,7 @@ class GovEaseApp extends StatelessWidget {
           elevation: 2,
         ),
       ),
-  home: const AuthScreen(),
+      home: const AuthScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

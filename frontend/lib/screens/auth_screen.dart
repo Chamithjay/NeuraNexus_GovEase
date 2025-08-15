@@ -67,7 +67,8 @@ class _AuthScreenState extends State<AuthScreen> {
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (_) => CitizenRegisterScreen(baseUrl: _baseUrl),
+                                builder: (_) =>
+                                    CitizenRegisterScreen(baseUrl: _baseUrl),
                               ),
                             );
                           },
@@ -97,9 +98,20 @@ class _AuthScreenState extends State<AuthScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _field('Email', 'you@example.com', _emailController, validator: _emailValidator),
+          _field(
+            'Email',
+            'you@example.com',
+            _emailController,
+            validator: _emailValidator,
+          ),
           const SizedBox(height: 12),
-          _field('Password', '••••••••', _passwordController, obscure: true, validator: _passwordValidator),
+          _field(
+            'Password',
+            '••••••••',
+            _passwordController,
+            obscure: true,
+            validator: _passwordValidator,
+          ),
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
@@ -129,7 +141,13 @@ class _AuthScreenState extends State<AuthScreen> {
     return null;
   }
 
-  Widget _field(String label, String hint, TextEditingController c, {bool obscure = false, String? Function(String?)? validator}) {
+  Widget _field(
+    String label,
+    String hint,
+    TextEditingController c, {
+    bool obscure = false,
+    String? Function(String?)? validator,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -141,7 +159,10 @@ class _AuthScreenState extends State<AuthScreen> {
           validator: validator,
           decoration: InputDecoration(
             hintText: hint,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 12,
+            ),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           ),
         ),
@@ -156,16 +177,22 @@ class _AuthScreenState extends State<AuthScreen> {
       final uri = Uri.parse('$_baseUrl/api/auth/login');
       final res = await http.post(
         uri,
-        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
-        body: json.encode({'email': _emailController.text.trim(), 'password': _passwordController.text.trim()}),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'email': _emailController.text.trim(),
+          'password': _passwordController.text.trim(),
+        }),
       );
       if (res.statusCode == 200) {
         final data = json.decode(res.body) as Map<String, dynamic>;
         final user = data['user'] as Map<String, dynamic>?;
-  final role = user?['role']?.toString() ?? 'Citizen';
-  final citizenId = user?['linked_citizen_id']?.toString();
-  final adminId = user?['linked_admin_id']?.toString();
-  _routeByRole(role, citizenId: citizenId, adminId: adminId);
+        final role = user?['role']?.toString() ?? 'Citizen';
+        final citizenId = user?['linked_citizen_id']?.toString();
+        final adminId = user?['linked_admin_id']?.toString();
+        _routeByRole(role, citizenId: citizenId, adminId: adminId);
       } else {
         _snack('Login failed (${res.statusCode})');
       }
@@ -175,7 +202,6 @@ class _AuthScreenState extends State<AuthScreen> {
       if (mounted) setState(() => _loading = false);
     }
   }
-
 
   void _routeByRole(String role, {String? citizenId, String? adminId}) {
     Widget screen;
@@ -189,7 +215,9 @@ class _AuthScreenState extends State<AuthScreen> {
       default:
         screen = HomeScreen(citizenId: citizenId);
     }
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => screen));
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => screen));
   }
 
   void _snack(String msg) {

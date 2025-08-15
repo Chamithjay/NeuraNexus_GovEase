@@ -8,7 +8,8 @@ class GovEaseHeader extends StatefulWidget {
   final String sectionTitle; // e.g., Teacher Transfers
   final VoidCallback? onBack;
   final VoidCallback? onNotifications;
-  final bool enableNotifications; // if true and citizenId provided, show unread badge
+  final bool
+  enableNotifications; // if true and citizenId provided, show unread badge
   final String baseUrl; // backend base URL
   final String? citizenId; // logged-in citizen id
 
@@ -38,9 +39,13 @@ class _GovEaseHeaderState extends State<GovEaseHeader> {
   }
 
   Future<void> _loadUnread() async {
-    if (!widget.enableNotifications || (widget.citizenId == null || widget.citizenId!.isEmpty)) return;
+    if (!widget.enableNotifications ||
+        (widget.citizenId == null || widget.citizenId!.isEmpty))
+      return;
     try {
-      final uri = Uri.parse('${widget.baseUrl}/api/notifications/citizen/${Uri.encodeComponent(widget.citizenId!)}?only_unread=true');
+      final uri = Uri.parse(
+        '${widget.baseUrl}/api/notifications/citizen/${Uri.encodeComponent(widget.citizenId!)}?only_unread=true',
+      );
       final res = await http.get(uri, headers: {'Accept': 'application/json'});
       if (res.statusCode == 200) {
         final list = json.decode(res.body) as List<dynamic>;
@@ -48,8 +53,7 @@ class _GovEaseHeaderState extends State<GovEaseHeader> {
       }
     } catch (_) {
       // ignore network error for header badge
-    } finally {
-    }
+    } finally {}
   }
 
   @override
@@ -84,18 +88,31 @@ class _GovEaseHeaderState extends State<GovEaseHeader> {
                   children: [
                     IconButton(
                       onPressed: widget.onNotifications,
-                      icon: const Icon(Icons.notifications_none, color: Colors.white),
+                      icon: const Icon(
+                        Icons.notifications_none,
+                        color: Colors.white,
+                      ),
                     ),
                     if (widget.enableNotifications && _unread > 0)
                       Positioned(
                         right: 6,
                         top: 6,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(color: Colors.redAccent, borderRadius: BorderRadius.circular(10)),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.redAccent,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                           child: Text(
                             _unread > 99 ? '99+' : '$_unread',
-                            style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -138,7 +155,10 @@ class _GovEaseHeaderState extends State<GovEaseHeader> {
                 bottom: 10,
                 child: Center(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),

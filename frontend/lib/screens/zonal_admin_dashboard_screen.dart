@@ -11,7 +11,8 @@ class ZonalAdminDashboardScreen extends StatefulWidget {
   const ZonalAdminDashboardScreen({super.key, this.adminId});
 
   @override
-  State<ZonalAdminDashboardScreen> createState() => _ZonalAdminDashboardScreenState();
+  State<ZonalAdminDashboardScreen> createState() =>
+      _ZonalAdminDashboardScreenState();
 }
 
 class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
@@ -78,7 +79,9 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
                                   Container(
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF1976D2).withOpacity(0.1),
+                                      color: const Color(
+                                        0xFF1976D2,
+                                      ).withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: const Icon(
@@ -90,7 +93,8 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
                                   const SizedBox(width: 16),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         const Text(
                                           'Controlling Districts',
@@ -105,9 +109,17 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
                                           spacing: 8,
                                           runSpacing: 8,
                                           children: [
-                                            for (final z in List<String>.from((_admin!['controlling_zones'] ?? []) as List))
+                                            for (final z in List<String>.from(
+                                              (_admin!['controlling_zones'] ??
+                                                      [])
+                                                  as List,
+                                            ))
                                               Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 6,
+                                                    ),
                                                 decoration: BoxDecoration(
                                                   gradient: LinearGradient(
                                                     colors: [
@@ -115,7 +127,8 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
                                                       const Color(0xFF42A5F5),
                                                     ],
                                                   ),
-                                                  borderRadius: BorderRadius.circular(20),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
                                                 ),
                                                 child: Text(
                                                   z,
@@ -136,16 +149,16 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
                             ],
                           ),
                         ),
-                      
+
                       // Analytics Overview Cards
                       _buildAnalyticsOverview(),
-                      
+
                       // Transfer Matches Section
                       _buildTransferMatchesSection(),
-                      
+
                       // District Flow Section
                       _buildDistrictFlowSection(),
-                      
+
                       const SizedBox(height: 80), // Space for floating button
                     ],
                   ),
@@ -153,7 +166,7 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
               ),
             ],
           ),
-          
+
           // Floating Logout Button
           Positioned(
             bottom: 20,
@@ -183,12 +196,16 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
 
   Widget _buildAnalyticsOverview() {
     if (_admin == null) return const SizedBox.shrink();
-    
-    final controllingZones = List<String>.from((_admin!['controlling_zones'] ?? []) as List);
+
+    final controllingZones = List<String>.from(
+      (_admin!['controlling_zones'] ?? []) as List,
+    );
     final totalMatches = _matches.length;
-    final agreedMatches = _matches.where((m) => m['match_status'] == 'AGREED').length;
+    final agreedMatches = _matches
+        .where((m) => m['match_status'] == 'AGREED')
+        .length;
     final pendingMatches = totalMatches - agreedMatches;
-    
+
     return Container(
       margin: const EdgeInsets.all(20),
       child: Column(
@@ -220,7 +237,7 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          
+
           // Statistics Cards
           GridView.count(
             crossAxisCount: 2,
@@ -228,7 +245,8 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
             mainAxisSpacing: 12, // Reduced spacing
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            childAspectRatio: 1.8, // Increased aspect ratio to make cards shorter
+            childAspectRatio:
+                1.8, // Increased aspect ratio to make cards shorter
             children: [
               _buildStatCard(
                 'Total Districts',
@@ -261,7 +279,12 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16), // Reduced padding
       decoration: BoxDecoration(
@@ -361,7 +384,7 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
             ],
           ),
           const SizedBox(height: 20),
-          
+
           if (_controllingZones.isEmpty)
             Container(
               padding: const EdgeInsets.all(16),
@@ -377,7 +400,10 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
                   Expanded(
                     child: Text(
                       'No controlling districts assigned.',
-                      style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        color: Colors.redAccent,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],
@@ -395,12 +421,18 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
                 children: [
                   Expanded(
                     child: DropdownButtonFormField<String>(
-                      value: _selectedZone ?? (_controllingZones.isNotEmpty ? _controllingZones.first : null),
+                      value:
+                          _selectedZone ??
+                          (_controllingZones.isNotEmpty
+                              ? _controllingZones.first
+                              : null),
                       items: _controllingZones
-                          .map((z) => DropdownMenuItem<String>(
-                                value: z,
-                                child: Text(z),
-                              ))
+                          .map(
+                            (z) => DropdownMenuItem<String>(
+                              value: z,
+                              child: Text(z),
+                            ),
+                          )
                           .toList(),
                       onChanged: (v) => setState(() => _selectedZone = v),
                       decoration: const InputDecoration(
@@ -425,7 +457,10 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF1976D2),
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -489,7 +524,7 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
             ],
           ),
           const SizedBox(height: 20),
-          
+
           if (_controllingZones.isNotEmpty) ...[
             Container(
               padding: const EdgeInsets.all(16),
@@ -502,12 +537,18 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
                 children: [
                   Expanded(
                     child: DropdownButtonFormField<String>(
-                      value: _selectedDistrict ?? (_controllingZones.isNotEmpty ? _controllingZones.first : null),
+                      value:
+                          _selectedDistrict ??
+                          (_controllingZones.isNotEmpty
+                              ? _controllingZones.first
+                              : null),
                       items: _controllingZones
-                          .map((z) => DropdownMenuItem<String>(
-                                value: z,
-                                child: Text(z),
-                              ))
+                          .map(
+                            (z) => DropdownMenuItem<String>(
+                              value: z,
+                              child: Text(z),
+                            ),
+                          )
                           .toList(),
                       onChanged: (v) => setState(() => _selectedDistrict = v),
                       decoration: const InputDecoration(
@@ -532,7 +573,10 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE91E63),
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -564,7 +608,7 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
         ),
       );
     }
-    
+
     if (_matches.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(40),
@@ -596,7 +640,7 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
         ),
       );
     }
-    
+
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -616,7 +660,10 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF1976D2).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
@@ -633,9 +680,15 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              _enhancedMatchRequestRow('Request A', m['request_a'] as Map<String, dynamic>?),
+              _enhancedMatchRequestRow(
+                'Request A',
+                m['request_a'] as Map<String, dynamic>?,
+              ),
               const SizedBox(height: 12),
-              _enhancedMatchRequestRow('Request B', m['request_b'] as Map<String, dynamic>?),
+              _enhancedMatchRequestRow(
+                'Request B',
+                m['request_b'] as Map<String, dynamic>?,
+              ),
             ],
           ),
         );
@@ -649,7 +702,7 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
     if (r == null) return const SizedBox.shrink();
     final t = (r['teacher'] ?? {}) as Map<String, dynamic>;
     final subjects = (t['subjects'] as List?)?.join(', ') ?? 'N/A';
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -709,9 +762,7 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
             children: [
               Icon(Icons.school, size: 16, color: Colors.grey[600]),
               const SizedBox(width: 6),
-              Expanded(
-                child: Text('School: ${t['school_id'] ?? 'N/A'}'),
-              ),
+              Expanded(child: Text('School: ${t['school_id'] ?? 'N/A'}')),
             ],
           ),
           const SizedBox(height: 6),
@@ -719,9 +770,7 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
             children: [
               Icon(Icons.book, size: 16, color: Colors.grey[600]),
               const SizedBox(width: 6),
-              Expanded(
-                child: Text('Subjects: $subjects'),
-              ),
+              Expanded(child: Text('Subjects: $subjects')),
             ],
           ),
           const SizedBox(height: 6),
@@ -729,7 +778,9 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
             children: [
               Icon(Icons.access_time, size: 16, color: Colors.grey[600]),
               const SizedBox(width: 6),
-              Text('Experience: ${t['years_in_service_district'] ?? 'N/A'} years'),
+              Text(
+                'Experience: ${t['years_in_service_district'] ?? 'N/A'} years',
+              ),
             ],
           ),
         ],
@@ -746,13 +797,16 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
             children: [
               CircularProgressIndicator(),
               SizedBox(height: 16),
-              Text('Analyzing flow data...', style: TextStyle(color: Colors.grey)),
+              Text(
+                'Analyzing flow data...',
+                style: TextStyle(color: Colors.grey),
+              ),
             ],
           ),
         ),
       );
     }
-    
+
     if (_flow == null) {
       return Container(
         padding: const EdgeInsets.all(40),
@@ -778,11 +832,11 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
         ),
       );
     }
-    
+
     final incoming = Map<String, dynamic>.from(_flow!['incoming'] as Map);
     final outgoing = Map<String, dynamic>.from(_flow!['outgoing'] as Map);
     final totals = Map<String, dynamic>.from(_flow!['totals'] as Map);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -800,7 +854,11 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
                 ),
                 child: Column(
                   children: [
-                    const Icon(Icons.arrow_downward, color: Colors.white, size: 28),
+                    const Icon(
+                      Icons.arrow_downward,
+                      color: Colors.white,
+                      size: 28,
+                    ),
                     const SizedBox(height: 8),
                     Text(
                       totals['incoming']?.toString() ?? '0',
@@ -812,7 +870,10 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
                     ),
                     const Text(
                       'Incoming',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
@@ -830,7 +891,11 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
                 ),
                 child: Column(
                   children: [
-                    const Icon(Icons.arrow_upward, color: Colors.white, size: 28),
+                    const Icon(
+                      Icons.arrow_upward,
+                      color: Colors.white,
+                      size: 28,
+                    ),
                     const SizedBox(height: 8),
                     Text(
                       totals['outgoing']?.toString() ?? '0',
@@ -842,7 +907,10 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
                     ),
                     const Text(
                       'Outgoing',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
@@ -851,7 +919,7 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
           ],
         ),
         const SizedBox(height: 24),
-        
+
         // Detailed Breakdown
         Container(
           padding: const EdgeInsets.all(20),
@@ -896,15 +964,18 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
       return Container(
         padding: const EdgeInsets.all(16),
         child: const Center(
-          child: Text('No data available', style: TextStyle(color: Colors.grey)),
+          child: Text(
+            'No data available',
+            style: TextStyle(color: Colors.grey),
+          ),
         ),
       );
     }
-    
+
     final entries = data.entries.toList()
       ..sort((a, b) => (b.value as int).compareTo(a.value as int));
     final maxVal = entries.isEmpty ? 1 : (entries.first.value as int);
-    
+
     return Column(
       children: [
         for (final e in entries.take(5))
@@ -948,17 +1019,17 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
                 ),
                 const SizedBox(width: 12),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     '${e.value}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: color,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold, color: color),
                   ),
                 ),
               ],
@@ -971,15 +1042,20 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
   Future<void> _loadMatches() async {
     setState(() => _loadingMatches = true);
     try {
-      final zone = _selectedZone ?? (_controllingZones.isNotEmpty ? _controllingZones.first : null);
+      final zone =
+          _selectedZone ??
+          (_controllingZones.isNotEmpty ? _controllingZones.first : null);
       if (zone == null) {
         _snack('No district selected');
         return;
       }
-      final uri = Uri.parse('$_baseUrl/api/admin-analytics/matches?zones=${Uri.encodeComponent(zone)}');
+      final uri = Uri.parse(
+        '$_baseUrl/api/admin-analytics/matches?zones=${Uri.encodeComponent(zone)}',
+      );
       final res = await http.get(uri, headers: {'Accept': 'application/json'});
       if (res.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(res.body) as Map<String, dynamic>;
+        final Map<String, dynamic> data =
+            json.decode(res.body) as Map<String, dynamic>;
         setState(() => _matches = (data['items'] as List?) ?? []);
       } else {
         _snack('Failed to load matches (${res.statusCode}).');
@@ -994,15 +1070,20 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
   Future<void> _loadFlow() async {
     setState(() => _loadingFlow = true);
     try {
-      final district = _selectedDistrict ?? (_controllingZones.isNotEmpty ? _controllingZones.first : null);
+      final district =
+          _selectedDistrict ??
+          (_controllingZones.isNotEmpty ? _controllingZones.first : null);
       if (district == null) {
         _snack('Enter a district');
         return;
       }
-      final uri = Uri.parse('$_baseUrl/api/admin-analytics/district-flow/${Uri.encodeComponent(district)}');
+      final uri = Uri.parse(
+        '$_baseUrl/api/admin-analytics/district-flow/${Uri.encodeComponent(district)}',
+      );
       final res = await http.get(uri, headers: {'Accept': 'application/json'});
       if (res.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(res.body) as Map<String, dynamic>;
+        final Map<String, dynamic> data =
+            json.decode(res.body) as Map<String, dynamic>;
         setState(() => _flow = data);
       } else {
         _snack('Failed to load analytics (${res.statusCode}).');
@@ -1027,7 +1108,11 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
       final res = await http.get(uri, headers: {'Accept': 'application/json'});
       if (res.statusCode == 200) {
         final data = json.decode(res.body) as Map<String, dynamic>;
-        final zones = (data['controlling_zones'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
+        final zones =
+            (data['controlling_zones'] as List?)
+                ?.map((e) => e.toString())
+                .toList() ??
+            <String>[];
         setState(() {
           _admin = data;
           _controllingZones = zones;
@@ -1063,11 +1148,7 @@ class _ZonalAdminDashboardScreenState extends State<ZonalAdminDashboardScreen> {
       ),
       child: Text(
         status ?? 'PENDING',
-        style: TextStyle(
-          color: fg,
-          fontWeight: FontWeight.w600,
-          fontSize: 12,
-        ),
+        style: TextStyle(color: fg, fontWeight: FontWeight.w600, fontSize: 12),
       ),
     );
   }

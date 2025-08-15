@@ -34,7 +34,7 @@ class _CitizenRegisterScreenState extends State<CitizenRegisterScreen> {
     _address.dispose();
     _contact.dispose();
     _email.dispose();
-  _password.dispose();
+    _password.dispose();
     super.dispose();
   }
 
@@ -51,11 +51,29 @@ class _CitizenRegisterScreenState extends State<CitizenRegisterScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _field('NIC', '199012345678', _nic, validator: (v) => (v==null||v.isEmpty)?'Required':null),
+                  _field(
+                    'NIC',
+                    '199012345678',
+                    _nic,
+                    validator: (v) =>
+                        (v == null || v.isEmpty) ? 'Required' : null,
+                  ),
                   const SizedBox(height: 10),
-                  _field('Full Name', 'Amalraj Perera', _fullName, validator: (v) => (v==null||v.isEmpty)?'Required':null),
+                  _field(
+                    'Full Name',
+                    'Amalraj Perera',
+                    _fullName,
+                    validator: (v) =>
+                        (v == null || v.isEmpty) ? 'Required' : null,
+                  ),
                   const SizedBox(height: 10),
-                  _field('Date of Birth (ISO 8601)', 'YYYY-MM-DDThh:mm:ss.sssZ', _dob, validator: (v)=> (v==null||v.isEmpty)?'Required':null),
+                  _field(
+                    'Date of Birth (ISO 8601)',
+                    'YYYY-MM-DDThh:mm:ss.sssZ',
+                    _dob,
+                    validator: (v) =>
+                        (v == null || v.isEmpty) ? 'Required' : null,
+                  ),
                   const SizedBox(height: 10),
                   ValueListenableBuilder<String>(
                     valueListenable: _gender,
@@ -63,21 +81,53 @@ class _CitizenRegisterScreenState extends State<CitizenRegisterScreen> {
                       value: g,
                       items: const [
                         DropdownMenuItem(value: 'Male', child: Text('Male')),
-                        DropdownMenuItem(value: 'Female', child: Text('Female')),
+                        DropdownMenuItem(
+                          value: 'Female',
+                          child: Text('Female'),
+                        ),
                         DropdownMenuItem(value: 'Other', child: Text('Other')),
                       ],
                       onChanged: (v) => _gender.value = v ?? 'Male',
-                      decoration: const InputDecoration(labelText: 'Gender', border: OutlineInputBorder()),
+                      decoration: const InputDecoration(
+                        labelText: 'Gender',
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
-                  _field('Address', '123 Main Street, Kandy, Sri Lanka', _address, validator: (v)=> (v==null||v.isEmpty)?'Required':null),
+                  _field(
+                    'Address',
+                    '123 Main Street, Kandy, Sri Lanka',
+                    _address,
+                    validator: (v) =>
+                        (v == null || v.isEmpty) ? 'Required' : null,
+                  ),
                   const SizedBox(height: 10),
-                  _field('Contact Number', '+94771234567', _contact, validator: (v)=> (v==null||v.isEmpty)?'Required':null),
+                  _field(
+                    'Contact Number',
+                    '+94771234567',
+                    _contact,
+                    validator: (v) =>
+                        (v == null || v.isEmpty) ? 'Required' : null,
+                  ),
                   const SizedBox(height: 10),
-                  _field('Email', 'you@example.com', _email, validator: (v)=> (v==null||!v.contains('@'))?'Valid email required':null),
+                  _field(
+                    'Email',
+                    'you@example.com',
+                    _email,
+                    validator: (v) => (v == null || !v.contains('@'))
+                        ? 'Valid email required'
+                        : null,
+                  ),
                   const SizedBox(height: 10),
-                  _field('Password', 'min 6 characters', _password, validator: (v)=> (v==null||v.length<6)?'Min 6 characters':null, obscure: true),
+                  _field(
+                    'Password',
+                    'min 6 characters',
+                    _password,
+                    validator: (v) =>
+                        (v == null || v.length < 6) ? 'Min 6 characters' : null,
+                    obscure: true,
+                  ),
                   const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
@@ -97,7 +147,13 @@ class _CitizenRegisterScreenState extends State<CitizenRegisterScreen> {
     );
   }
 
-  Widget _field(String label, String hint, TextEditingController c, {String? Function(String?)? validator, bool obscure=false}) {
+  Widget _field(
+    String label,
+    String hint,
+    TextEditingController c, {
+    String? Function(String?)? validator,
+    bool obscure = false,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -107,7 +163,10 @@ class _CitizenRegisterScreenState extends State<CitizenRegisterScreen> {
           controller: c,
           obscureText: obscure,
           validator: validator,
-          decoration: InputDecoration(hintText: hint, border: const OutlineInputBorder()),
+          decoration: InputDecoration(
+            hintText: hint,
+            border: const OutlineInputBorder(),
+          ),
         ),
       ],
     );
@@ -118,9 +177,12 @@ class _CitizenRegisterScreenState extends State<CitizenRegisterScreen> {
     setState(() => _loading = true);
     try {
       final uri = Uri.parse('${widget.baseUrl}/api/citizens/');
-    final res = await http.post(
+      final res = await http.post(
         uri,
-        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
         body: json.encode({
           'nic': _nic.text.trim(),
           'full_name': _fullName.text.trim(),
@@ -129,24 +191,32 @@ class _CitizenRegisterScreenState extends State<CitizenRegisterScreen> {
           'address': _address.text.trim(),
           'contact_number': _contact.text.trim(),
           'email': _email.text.trim(),
-      'password': _password.text.trim(),
-      'citizen_type': 'Citizen'
+          'password': _password.text.trim(),
+          'citizen_type': 'Citizen',
         }),
       );
       if (!mounted) return;
       if (res.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Citizen registered')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Citizen registered')));
         Navigator.of(context).pop();
       } else if (res.statusCode == 400) {
         final body = json.decode(res.body) as Map<String, dynamic>;
         final detail = body['detail']?.toString() ?? 'Validation error';
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(detail)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(detail)));
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed (${res.statusCode})')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed (${res.statusCode})')));
       }
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Network error')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Network error')));
     } finally {
       if (mounted) setState(() => _loading = false);
     }

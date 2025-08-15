@@ -104,7 +104,7 @@ class SchoolAdminDashboardScreen extends StatelessWidget {
               ),
             ],
           ),
-          
+
           // Floating Logout Button
           Positioned(
             bottom: 20,

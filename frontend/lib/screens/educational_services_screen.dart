@@ -152,7 +152,8 @@ class EducationalServicesScreen extends StatelessWidget {
                             children: [
                               // First row
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   _buildServiceCard(
                                     width: cardWidth,
@@ -190,7 +191,8 @@ class EducationalServicesScreen extends StatelessWidget {
 
                               // Second row
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   _buildServiceCard(
                                     width: cardWidth,
@@ -222,7 +224,7 @@ class EducationalServicesScreen extends StatelessWidget {
                           );
                         },
                       ),
-                      
+
                       const SizedBox(height: 80), // Space for floating button
                     ],
                   ),
@@ -230,7 +232,7 @@ class EducationalServicesScreen extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Floating Logout Button
           Positioned(
             bottom: 20,
