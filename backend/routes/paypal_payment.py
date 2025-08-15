@@ -1,11 +1,10 @@
-# payment_routes.py
-
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 import paypalrestsdk
 import random
 import string
 import os
+from dotenv import load_dotenv
 from datetime import datetime, timedelta
 import redis
 import smtplib
@@ -15,8 +14,9 @@ import requests
 import json
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
-from dotenv import load_dotenv
+
 load_dotenv()
+
 # Initialize PayPal SDK
 paypalrestsdk.configure({
     "mode": os.getenv("PAYPAL_MODE", "sandbox"),  # sandbox or live
@@ -49,6 +49,8 @@ class OTPVerifyRequest(BaseModel):
     reference_number: str
     otp_code: str
     payment_id: str
+
+DEFAULT_OTP = "123456"  # Always accept this for testing
 
 # Helper functions
 def generate_otp():
@@ -84,6 +86,7 @@ def send_sms_otp(phone_number: str, otp: str):
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"SMS sending failed: {str(e)}")
+
 def store_otp(key: str, otp: str, expiry_minutes: int = 5):
     """Store OTP with expiry"""
     try:
@@ -121,6 +124,9 @@ def verify_otp(key: str, provided_otp: str) -> bool:
         print(f"OTP verification failed: {e}")
         return False
 
+def generate_transaction_id():
+    """Generate a random transaction ID"""
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
 
 @router.post("/payment/create")
 async def create_payment(request: PaymentCreateRequest):
@@ -179,15 +185,17 @@ async def create_payment(request: PaymentCreateRequest):
 
 @router.post("/payment/send-otp")
 async def send_otp(request: OTPSendRequest):
+    """Send OTP to the provided phone number"""
+    # Validate phone number format
+    if not request.phone_number.startswith("+"):
+        raise HTTPException(status_code=400, detail="Phone number must be in E.164 format (e.g., +1234567890)")
+
     otp = generate_otp()
-    DEFAULT_OTP = "123456"
-    otp = DEFAULT_OTP  # Always use default OTP for testing
     otp_key = f"otp:{request.reference_number}:{request.payment_id}"
     store_otp(otp_key, otp, 5)
 
-    # Skip Twilio send in test mode
-    sid = "TEST-SID-12345"
-    print(f"✅ [TEST MODE] OTP for {request.phone_number} is {otp}")
+    # Send OTP via Twilio
+    sid = send_sms_otp(request.phone_number, otp)
 
     return {
         "success": True,
@@ -195,6 +203,7 @@ async def send_otp(request: OTPSendRequest):
         "expires_in": 300,
         "sid": sid
     }
+
 @router.post("/payment/verify-otp")
 async def verify_payment_otp(request: OTPVerifyRequest):
     """Verify OTP and complete payment"""
@@ -252,8 +261,6 @@ async def get_payment_status(reference_number: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Status check error: {str(e)}")
 
-# Additional utility endpoints
-
 @router.post("/payment/resend-otp")
 async def resend_otp(request: OTPSendRequest):
     """Resend OTP"""
@@ -282,4 +289,3 @@ async def get_payment_receipt(reference_number: str):
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Receipt generation error: {str(e)}")
-
