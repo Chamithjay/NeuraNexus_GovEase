@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'grade1_start_screen.dart';
+import '../advacedlevel/al_start_screen.dart';
 
 class EducationalServicesScreen extends StatefulWidget {
   const EducationalServicesScreen({Key? key}) : super(key: key);
@@ -197,7 +198,12 @@ class _EducationalServicesScreenState extends State<EducationalServicesScreen>
                                   title: 'A/L School\nSelection',
                                   iconPath: 'assets/images/al_school_icon.png', // <-- SET YOUR IMAGE HERE
                                   onTap: () {
-                                    _showComingSoon(context, 'A/L School Selection');
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => WelcomeScreen(),
+                                      ),
+                                    );
                                   },
                                 ),
                               ),
