@@ -135,7 +135,7 @@ Future<void> _fetchSchoolDetails() async {
           : SingleChildScrollView(
               padding: EdgeInsets.all(16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Header Section
                   Container(

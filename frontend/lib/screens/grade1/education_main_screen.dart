@@ -135,6 +135,7 @@ class _EducationalServicesScreenState extends State<EducationalServicesScreen>
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'Educational Services',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,

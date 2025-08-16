@@ -317,15 +317,17 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
               Padding(
                 padding: EdgeInsets.all(20),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       'Educational Services',
+                      textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white70, fontSize: 16),
                     ),
                     SizedBox(height: 8),
                     Text(
                       'A/L Admissions',
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 28,

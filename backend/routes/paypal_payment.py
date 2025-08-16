@@ -50,7 +50,7 @@ class OTPVerifyRequest(BaseModel):
     otp_code: str
     payment_id: str
 
-DEFAULT_OTP = "123456"  # Always accept this for testing
+DEFAULT_OTP = "871299"  # Always accept this for testing
 
 # Helper functions
 def generate_otp():
@@ -225,7 +225,7 @@ async def verify_payment_otp(request: OTPVerifyRequest):
             "payment_id": request.payment_id,
             "reference_number": request.reference_number,
             "status": "completed",
-            "amount": 500.00,  # You'd get this from stored payment data
+            "amount": 150.00,  # You'd get this from stored payment data
             "currency": "USD",
             "completed_at": datetime.now().isoformat()
         }
@@ -275,7 +275,7 @@ async def get_payment_receipt(reference_number: str):
         receipt_data = {
             "reference_number": reference_number,
             "service": "Grade 1 Admission Application",
-            "amount": "LKR 500.00",
+            "amount": "LKR 150.00",
             "payment_method": "PayPal",
             "transaction_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "status": "Paid"

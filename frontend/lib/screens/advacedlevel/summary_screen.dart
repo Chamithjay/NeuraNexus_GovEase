@@ -126,7 +126,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
           child: Padding(
             padding: EdgeInsets.all(20),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   'Application Summary',

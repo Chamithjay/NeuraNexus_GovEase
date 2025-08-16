@@ -41,15 +41,17 @@ class WelcomeScreen extends StatelessWidget {
                   Container(
                     padding: EdgeInsets.all(20),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
                           'Educational Services',
                           style: TextStyle(color: Colors.white70, fontSize: 16),
+                          textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 8),
                         Text(
                           'A/L Admissions',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 28,
@@ -59,6 +61,7 @@ class WelcomeScreen extends StatelessWidget {
                         SizedBox(height: 16),
                         Text(
                           'Secure your Advanced Level admission with ease.\nExplore your options, select your favorite stream,\nand find the schools that match your ambition!',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white70,
                             fontSize: 14,

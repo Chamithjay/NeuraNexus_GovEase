@@ -47,7 +47,7 @@ class StreamSelectionScreen extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.all(20),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       'Educational Services',

@@ -19,7 +19,7 @@ class ApplicationSummaryScreen extends StatefulWidget {
 
 class _ApplicationSummaryScreenState extends State<ApplicationSummaryScreen> {
   bool _isProcessingPayment = false;
-  final double applicationFee = 500.00; // LKR
+  final double applicationFee = 150.00; // LKR
 
   @override
   Widget build(BuildContext context) {
