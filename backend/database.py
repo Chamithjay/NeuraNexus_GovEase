@@ -1,9 +1,8 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from backend.config import MONGO_URI, DB_NAME
 
-client = None
-db = None
-
+client = AsyncIOMotorClient(MONGO_URI)
+db = client[DB_NAME]
 async def connect_to_mongo():
     global client, db
     if not MONGO_URI:

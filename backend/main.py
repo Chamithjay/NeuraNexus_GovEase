@@ -5,6 +5,7 @@ from backend.routes.grade1_admission import router as grade1_admission_router
 
 from backend.routes.paypal_payment import router as paypal_payment_router
 from backend.routes.school_routes import router as school_routes_router
+from backend.routes.al_schools import router as al_schools_router
 
 
 app = FastAPI(
@@ -24,6 +25,8 @@ app.add_middleware(
 app.include_router(grade1_admission_router)
 app.include_router(paypal_payment_router)
 app.include_router(school_routes_router)
+app.include_router(al_schools_router)
+
 # Connect on startup
 @app.on_event("startup")
 async def startup_db_client():
