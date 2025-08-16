@@ -12,8 +12,8 @@ class Bungalow(BaseModel):
     capacity: int
     price_per_night: float
     description: str
-    facilities: List[str] = []  # e.g., ["WiFi", "Pool"]
-    photos: List[str] = Field(..., min_items=4, max_items=4)  # Exactly 4 photos
+    facilities: List[str] = [] 
+    photos: List[str] = Field(..., min_items=4, max_items=4) 
 
     class Config:
         orm_mode = True

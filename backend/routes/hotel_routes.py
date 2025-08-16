@@ -8,6 +8,7 @@ from services.hotel_service import get_available_bungalows
 
 router = APIRouter()
 
+#get available bungalows based on district adults, and children
 @router.post("/bungalows/available")
 async def fetch_available_bungalows(request: AvailabilityRequest):
     available = await get_available_bungalows(
@@ -20,15 +21,7 @@ async def fetch_available_bungalows(request: AvailabilityRequest):
     return available
 
  
-
-# @router.post("/", response_model=Bungalow)
-# async def add_bungalow(bungalow: Bungalow):
-#     created = await create_bungalow(bungalow)
-#     if not created:
-#         raise HTTPException(status_code=500, detail="Failed to create bungalow")
-#     return created
-
-
+# upload a new bungalow details with images
 @router.post("/")
 async def add_bungalow(
     name: str = Form(...),

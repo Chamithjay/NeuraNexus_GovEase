@@ -6,6 +6,8 @@ from models.hotel import Bungalow
 import os
 
 
+#get available bungalows based on district adults, and children
+
 async def get_available_bungalows(district: str, checkin, checkout, adults: int, children: int):
     bungalow_collection = get_hotel_collection()
     booking_collection = get_booking_collection()
@@ -23,7 +25,7 @@ async def get_available_bungalows(district: str, checkin, checkout, adults: int,
 
     requested_people = adults + children
 
-    # Step 1: Find bungalows with enough total capacity
+    # Find bungalows with enough total capacity
     matching_bungalows = await bungalow_collection.find({
         "district": district,
         "capacity": {"$gte": requested_people}
@@ -34,14 +36,14 @@ async def get_available_bungalows(district: str, checkin, checkout, adults: int,
     for bungalow in matching_bungalows:
         capacity = bungalow.get("capacity", 0)
 
-        # Step 2: Find overlapping bookings
+        # Find overlapping bookings
         overlapping_bookings = await booking_collection.find({
             "bungalow_id": str(bungalow["_id"]),
             "checkin": {"$lt": checkout},
             "checkout": {"$gt": checkin}
         }).to_list(None)
 
-        # Step 3: Calculate booked people (adults + children)
+        # Calculate booked people (adults + children)
         booked_people = sum(
             int(b.get("adults", 0)) + int(b.get("children", 0))
             for b in overlapping_bookings
@@ -49,7 +51,7 @@ async def get_available_bungalows(district: str, checkin, checkout, adults: int,
 
         remaining_capacity = capacity - booked_people
 
-        # Step 4: Include bungalow if enough remaining capacity
+        # Include bungalow if enough remaining capacity
         if remaining_capacity >= requested_people:
             bungalow["_id"] = str(bungalow["_id"])
             available_bungalows.append(bungalow)
@@ -58,16 +60,8 @@ async def get_available_bungalows(district: str, checkin, checkout, adults: int,
 
 
 
-# async def create_bungalow(bungalow_data: Bungalow) -> Dict:
-#     # Convert Pydantic model to dict and remove None values
-#     bungalow_collection = get_hotel_collection()
-#     data = bungalow_data.dict(by_alias=True, exclude_none=True)
-#     result = await bungalow_collection.insert_one(data)
-#     created_bungalow = await bungalow_collection.find_one({"_id": result.inserted_id})
 
-#     if created_bungalow and "_id" in created_bungalow:
-#         created_bungalow["_id"] = str(created_bungalow["_id"])
-#     return created_bungalow
+#upload new bungalows with images
 
 UPLOAD_DIR = "uploads/"
 os.makedirs(UPLOAD_DIR, exist_ok=True)

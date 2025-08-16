@@ -21,10 +21,10 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       onGenerateRoute: (settings) {
         if (settings.name == '/') {
-          // remove const if SearchHotelsPage constructor is not const
+         
           return MaterialPageRoute(builder: (context) => SearchHotelsPage());
         } else if (settings.name == '/results') {
-          // cast arguments safely
+          
           final args = settings.arguments as List<dynamic>?; 
           if (args != null) {
             return MaterialPageRoute(
